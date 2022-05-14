@@ -1,5 +1,3 @@
-// drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
-
 import { Bullet } from './Bullet';
 
 export class Spaceship {
@@ -25,7 +23,6 @@ export class Spaceship {
     public isArrowLeft: boolean = false;
 
     public bullets: Bullet[] = [];
-    // private isBulletsLoaded: boolean = false;
 
     constructor(private canvas: HTMLCanvasElement, private ctx: CanvasRenderingContext2D) {
         this.img.src = require('./../img/spaceship_sprites.png');
@@ -47,7 +44,6 @@ export class Spaceship {
     private setShotListener(): void {
         window.document.body.addEventListener('keyup', (e) => {
             if (e.key === ' ') {
-                console.log('shot');
                 this.initBullet();
             }
         });
@@ -110,7 +106,6 @@ export class Spaceship {
             this.ctx.drawImage(bullet.img, bullet.sx, 0, bullet.frameWidth, bullet.height, bullet.x, bullet.y, bullet.frameWidth, bullet.height);
 
             if (bullet.y + bullet.height <= 0) {
-                console.log(bullet.y);
                 arr.splice(idx, 1);
             }
         });

@@ -1,23 +1,24 @@
 // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
 
+import { Enemies } from './types';
+
 import { Spaceship } from './Spaceship';
+import { Enemy } from './Enemy';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
     private spaceship: Spaceship = new Spaceship(this.canvas, this.ctx);
+    private enemies: Enemy[] = [];
 
     constructor() {
         this.setCanvasDimensions();
+        this.initGameLoop();
 
         this.initSpaceship();
 
-        // this.spaceship.initBullet();
-
-        // ***********************
-        // ***********************
-        this.initGameLoop();
+        this.initEnemy();
     }
 
     private setCanvasDimensions(): void {
@@ -35,11 +36,10 @@ export class Game {
         // spaceship
         this.drawSpaceship();
         this.spaceship.setMovement();
-
-        // bullet
-        // console.log(this.spaceship.bullets);
-
         this.spaceship.drawBullets();
+
+        // enemies
+        this.drawEnemies();
     };
 
     private initSpaceship(): void {
@@ -52,7 +52,6 @@ export class Game {
     }
 
     private drawSpaceship(): void {
-        // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
         this.spaceship.speedCounter++;
 
         if (this.spaceship.speedCounter > this.spaceship.speedConstraint) {
@@ -69,26 +68,75 @@ export class Game {
         this.ctx.drawImage(this.spaceship.img, this.spaceship.sx, 0, this.spaceship.frameWidth, this.spaceship.height, this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth, this.spaceship.height);
     }
 
-    // private initBullet() {
-    //     // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
+    private initEnemy(): void {
+        const enemy: Enemy = new Enemy(this.canvas, Enemies.enemySmallOne);
 
-    //     const bullet: Bullet = new Bullet(this.canvas);
+        enemy.img.addEventListener('load', () => {
+            enemy.specifyDimensions();
 
-    //     bullet.img.addEventListener('load', () => {
-    //         bullet.specifyDimensions();
+            // position
+            const randomPosition = enemy._randomPositionX;
 
-    //         this.bullets.push(bullet);
-    //         this.bullets.push(bullet);
-    //     });
-    // }
+            enemy.x = randomPosition;
 
-    // private drawBullet() {
-    //     console.log(this.bullets);
+            if (typeof enemy.frameHeight === 'number') {
+                enemy.y = -enemy.frameHeight / 2;
+            }
 
-    //     this.bullets.forEach((bullet) => {
-    //         this.ctx.drawImage(bullet.img, bullet.sx, 0, bullet.frameWidth, bullet.height, 0, 0, bullet.frameWidth, bullet.height);
+            // step
+            if (enemy.numOfEnemy === Enemies.enemySmallOne) {
+                enemy.dy = 1;
+            }
 
-    //         console.log(this.bullets);
-    //     });
-    // }
+            // add to array
+            this.enemies.push(enemy);
+        });
+    }
+
+    private drawEnemies(): void {
+        // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
+
+        this.enemies.forEach((enemy, idx, arr) => {
+            enemy.speedCounter++;
+
+            // regulate speed
+            if (enemy.speedCounter > enemy.speedConstraint) {
+                enemy.speedCounter = 0;
+                enemy.currentFrame++;
+            }
+
+            // reset current frame
+            if (typeof enemy.totalFrames === 'number') {
+                if (enemy.currentFrame >= enemy.totalFrames) {
+                    enemy.currentFrame = 0;
+                }
+            }
+
+            // starting cut point
+            if (typeof enemy.frameWidth === 'number') {
+                enemy.sx = enemy.currentFrame * enemy.frameWidth;
+            }
+
+            // increase y
+            if (typeof enemy.y === 'number') {
+                enemy.y += enemy.dy;
+
+                // console.log('canvas', this.canvas.height);
+                // console.log('y', enemy.y);
+            }
+
+            // delete off the screen
+            if (typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
+                if (enemy.y > this.canvas.height - enemy.frameHeight) {
+                    enemy.y = this.canvas.height - enemy.frameHeight;
+                }
+            }
+
+            // console.log(enemy.y);
+
+            if (typeof enemy.x === 'number' && typeof enemy.y === 'number' && typeof enemy.frameWidth === 'number' && typeof enemy.frameHeight === 'number') {
+                this.ctx.drawImage(enemy.img, enemy.sx, enemy.sy, enemy.frameWidth, enemy.frameHeight, enemy.x, enemy.y, enemy.frameWidth, enemy.frameHeight);
+            }
+        });
+    }
 }
