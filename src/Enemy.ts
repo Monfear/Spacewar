@@ -1,3 +1,5 @@
+import { Enemies, EnemiesFrames } from './types';
+
 export class Enemy {
     public img: HTMLImageElement = new Image();
 
@@ -16,10 +18,10 @@ export class Enemy {
     public x: number | undefined = undefined;
     public y: number | undefined = undefined;
 
-    // public dx: number = 5; tylko w jednym rodzaju
-    public dy: number = 5; // zalezne od rodzaju
+    public dx: number | undefined | null = null; // tylko w jednym rodzaju
+    public dy: number | undefined = undefined;
 
-    public sx: number = 0;
+    public sx: number | undefined = undefined;
     public sy: number = 0;
 
     constructor(private canvas: HTMLCanvasElement, public numOfEnemy: number) {
@@ -27,11 +29,11 @@ export class Enemy {
     }
 
     setImgSrc(): void {
-        if (this.numOfEnemy === 1) {
+        if (this.numOfEnemy === Enemies.enemySmallOne) {
             this.img.src = require('./../img/enemy_1_sprites.png');
-        } else if (this.numOfEnemy === 2) {
+        } else if (this.numOfEnemy === Enemies.enemySmallTwo) {
             this.img.src = require('./../img/enemy_2_sprites.png');
-        } else if (this.numOfEnemy === 3) {
+        } else if (this.numOfEnemy === Enemies.enemyBigOne) {
             this.img.src = require('./../img/enemy_3_sprites.png');
         }
     }
@@ -40,12 +42,12 @@ export class Enemy {
         this.width = this.img.width;
         this.height = this.img.height;
 
-        if (this.numOfEnemy === 1) {
-            this.totalFrames = 8;
-        } else if (this.numOfEnemy === 2) {
-            this.totalFrames = 5;
-        } else if (this.numOfEnemy === 3) {
-            this.totalFrames = 8;
+        if (this.numOfEnemy === Enemies.enemySmallOne) {
+            this.totalFrames = EnemiesFrames.enemySmallOne;
+        } else if (this.numOfEnemy === Enemies.enemySmallTwo) {
+            this.totalFrames = EnemiesFrames.enemySmallTwo;
+        } else if (this.numOfEnemy === Enemies.enemyBigOne) {
+            this.totalFrames = EnemiesFrames.enemyBigOne;
         } else {
             console.warn('wrong num of enemy');
         }

@@ -3,21 +3,26 @@ import { Bullet } from './Bullet';
 export class Spaceship {
     public img: HTMLImageElement = new Image();
 
-    public width: number = 0;
-    public height: number = 0;
+    public width: number | undefined = undefined;
+    public height: number | undefined = undefined;
 
-    public frameWidth: number = 0;
+    public frameWidth: number | undefined = undefined;
+    public frameHeight: number | undefined = undefined;
+
     public currentFrame: number = 0;
     public totalFrames: number = 6;
 
     public speedCounter: number = 0;
     public speedConstraint: number = 5;
 
-    public x: number = 0;
-    public y: number = 0;
-    public dx: number = 10;
+    public x: number | undefined = undefined;
+    public y: number | undefined = undefined;
 
-    public sx: number = 0;
+    public dx: number = 10;
+    private dy: null = null;
+
+    public sx: number | undefined = undefined;
+    public sy: number = 0;
 
     public isArrowRight: boolean = false;
     public isArrowLeft: boolean = false;
@@ -52,7 +57,9 @@ export class Spaceship {
     public specifyDimensions(): void {
         this.width = this.img.width;
         this.height = this.img.height;
+
         this.frameWidth = this.img.width / this.totalFrames;
+        this.frameHeight = this.img.height;
     }
 
     private handleKeys(e: KeyboardEvent, isActive: boolean): void {
@@ -64,10 +71,12 @@ export class Spaceship {
     }
 
     public setMovement(): void {
-        if (this.isArrowRight && this.x < this.canvas.width - this.frameWidth) {
-            this.x += this.dx;
-        } else if (this.isArrowLeft && this.x > 0) {
-            this.x -= this.dx;
+        if (typeof this.frameWidth === 'number' && typeof this.x === 'number') {
+            if (this.isArrowRight && this.x < this.canvas.width - this.frameWidth) {
+                this.x += this.dx;
+            } else if (this.isArrowLeft && this.x > 0) {
+                this.x -= this.dx;
+            }
         }
     }
 
@@ -77,36 +86,56 @@ export class Spaceship {
         bullet.img.addEventListener('load', () => {
             bullet.specifyDimensions();
 
-            const posX: number = this.x + this.frameWidth / 2 - bullet.frameWidth / 2;
-            const posY: number = this.y - bullet.height + bullet.shiftY;
+            // position x y
+            if (typeof this.frameWidth === 'number' && typeof this.x === 'number' && typeof this.y === 'number' && typeof bullet.height === 'number' && typeof bullet.frameWidth === 'number') {
+                const posX: number = this.x + this.frameWidth / 2 - bullet.frameWidth / 2;
+                const posY: number = this.y - bullet.height + bullet.shiftY;
 
-            bullet.x = posX;
-            bullet.y = posY;
+                bullet.x = posX;
+                bullet.y = posY;
 
-            this.bullets.push(bullet);
+                // add to array
+                this.bullets.push(bullet);
+            }
         });
     }
 
     drawBullets(): void {
         this.bullets.forEach((bullet, idx, arr) => {
+            // increase constraint counter
             bullet.speedCounter++;
 
+            // regulate speed frames
             if (bullet.speedCounter > bullet.speedConstraint) {
                 bullet.currentFrame++;
                 bullet.speedCounter = 0;
             }
 
+            // reset current frame
             if (bullet.currentFrame >= bullet.totalFrames) {
                 bullet.currentFrame = 0;
             }
 
-            bullet.sx = bullet.currentFrame * bullet.frameWidth;
-            bullet.y += bullet.dy;
+            // starting cut point
+            if (typeof bullet.frameWidth === 'number') {
+                bullet.sx = bullet.currentFrame * bullet.frameWidth;
+            }
 
-            this.ctx.drawImage(bullet.img, bullet.sx, 0, bullet.frameWidth, bullet.height, bullet.x, bullet.y, bullet.frameWidth, bullet.height);
+            // increase y
+            if (typeof bullet.y === 'number') {
+                bullet.y += bullet.dy;
+            }
 
-            if (bullet.y + bullet.height <= 0) {
-                arr.splice(idx, 1);
+            // draw
+            if (typeof bullet.height === 'number' && typeof bullet.frameWidth === 'number' && typeof bullet.frameHeight === 'number' && typeof bullet.x === 'number' && typeof bullet.y === 'number' && typeof bullet.sx === 'number') {
+                this.ctx.drawImage(bullet.img, bullet.sx, bullet.sy, bullet.frameWidth, bullet.frameHeight, bullet.x, bullet.y, bullet.frameWidth, bullet.frameHeight);
+            }
+
+            // // delete off the screen
+            if (typeof bullet.height === 'number' && typeof bullet.y === 'number') {
+                if (bullet.y + bullet.height <= 0) {
+                    arr.splice(idx, 1);
+                }
             }
         });
     }

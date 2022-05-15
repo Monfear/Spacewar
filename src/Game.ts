@@ -1,6 +1,6 @@
 // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
 
-import { Enemies } from './types';
+import { Enemies, EnemiesSpeeds } from './types';
 
 import { Spaceship } from './Spaceship';
 import { Enemy } from './Enemy';
@@ -17,7 +17,6 @@ export class Game {
         this.initGameLoop();
 
         this.initSpaceship();
-
         this.initEnemy();
     }
 
@@ -46,26 +45,38 @@ export class Game {
         this.spaceship.img.addEventListener('load', () => {
             this.spaceship.specifyDimensions();
 
-            this.spaceship.x = this.canvas.width / 2 - this.spaceship.frameWidth / 2;
-            this.spaceship.y = this.canvas.height - this.spaceship.height + 40;
+            // starting position
+            if (typeof this.spaceship.frameWidth === 'number' && typeof this.spaceship.height === 'number') {
+                this.spaceship.x = this.canvas.width / 2 - this.spaceship.frameWidth / 2;
+                this.spaceship.y = this.canvas.height - this.spaceship.height + 40;
+            }
         });
     }
 
     private drawSpaceship(): void {
+        // increase constraint counter
         this.spaceship.speedCounter++;
 
+        // regulate speed frames
         if (this.spaceship.speedCounter > this.spaceship.speedConstraint) {
             this.spaceship.speedCounter = 0;
             this.spaceship.currentFrame++;
         }
 
+        // reset current frame
         if (this.spaceship.currentFrame === this.spaceship.totalFrames) {
             this.spaceship.currentFrame = 0;
         }
 
-        this.spaceship.sx = this.spaceship.currentFrame * this.spaceship.frameWidth;
+        // starting cut point
+        if (typeof this.spaceship.frameWidth === 'number') {
+            this.spaceship.sx = this.spaceship.currentFrame * this.spaceship.frameWidth;
+        }
 
-        this.ctx.drawImage(this.spaceship.img, this.spaceship.sx, 0, this.spaceship.frameWidth, this.spaceship.height, this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth, this.spaceship.height);
+        // draw
+        if (typeof this.spaceship.frameWidth === 'number' && typeof this.spaceship.frameHeight === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.sx === 'number') {
+            this.ctx.drawImage(this.spaceship.img, this.spaceship.sx, this.spaceship.sy, this.spaceship.frameWidth, this.spaceship.frameHeight, this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth, this.spaceship.frameHeight);
+        }
     }
 
     private initEnemy(): void {
@@ -85,7 +96,7 @@ export class Game {
 
             // step
             if (enemy.numOfEnemy === Enemies.enemySmallOne) {
-                enemy.dy = 1;
+                enemy.dy = EnemiesSpeeds.enemySmallOne; // dynamically
             }
 
             // add to array
@@ -94,12 +105,11 @@ export class Game {
     }
 
     private drawEnemies(): void {
-        // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
-
         this.enemies.forEach((enemy, idx, arr) => {
+            // increase constraint counter
             enemy.speedCounter++;
 
-            // regulate speed
+            // regulate speed frames
             if (enemy.speedCounter > enemy.speedConstraint) {
                 enemy.speedCounter = 0;
                 enemy.currentFrame++;
@@ -118,11 +128,13 @@ export class Game {
             }
 
             // increase y
-            if (typeof enemy.y === 'number') {
+            if (typeof enemy.y === 'number' && typeof enemy.dy === 'number') {
                 enemy.y += enemy.dy;
+            }
 
-                // console.log('canvas', this.canvas.height);
-                // console.log('y', enemy.y);
+            // draw
+            if (typeof enemy.x === 'number' && typeof enemy.y === 'number' && typeof enemy.frameWidth === 'number' && typeof enemy.frameHeight === 'number' && typeof enemy.sx === 'number') {
+                this.ctx.drawImage(enemy.img, enemy.sx, enemy.sy, enemy.frameWidth, enemy.frameHeight, enemy.x, enemy.y, enemy.frameWidth, enemy.frameHeight);
             }
 
             // delete off the screen
@@ -130,12 +142,6 @@ export class Game {
                 if (enemy.y > this.canvas.height - enemy.frameHeight) {
                     enemy.y = this.canvas.height - enemy.frameHeight;
                 }
-            }
-
-            // console.log(enemy.y);
-
-            if (typeof enemy.x === 'number' && typeof enemy.y === 'number' && typeof enemy.frameWidth === 'number' && typeof enemy.frameHeight === 'number') {
-                this.ctx.drawImage(enemy.img, enemy.sx, enemy.sy, enemy.frameWidth, enemy.frameHeight, enemy.x, enemy.y, enemy.frameWidth, enemy.frameHeight);
             }
         });
     }
