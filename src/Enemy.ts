@@ -52,7 +52,7 @@ export class Enemy {
             console.warn('wrong num of enemy');
         }
 
-        if (this.totalFrames) {
+        if (typeof this.totalFrames === 'number') {
             this.frameWidth = this.img.width / this.totalFrames;
             this.frameHeight = this.img.height;
         }

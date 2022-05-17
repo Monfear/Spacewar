@@ -4,13 +4,17 @@ import { Enemies, EnemiesSpeeds } from './types';
 
 import { Spaceship } from './Spaceship';
 import { Enemy } from './Enemy';
+import { Explosion } from './Explosion';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
     private spaceship: Spaceship = new Spaceship(this.canvas, this.ctx);
+
     private enemies: Enemy[] = [];
+
+    private explosions: Explosion[] = [];
 
     constructor() {
         this.setCanvasDimensions();
@@ -39,6 +43,9 @@ export class Game {
 
         // enemies
         this.drawEnemies();
+
+        // explosions
+        this.drawExplosions();
     };
 
     private initSpaceship(): void {
@@ -86,9 +93,7 @@ export class Game {
             enemy.specifyDimensions();
 
             // position
-            const randomPosition = enemy._randomPositionX;
-
-            enemy.x = randomPosition;
+            enemy.x = enemy._randomPositionX;
 
             if (typeof enemy.frameHeight === 'number') {
                 enemy.y = -enemy.frameHeight / 2;
@@ -96,7 +101,11 @@ export class Game {
 
             // step
             if (enemy.numOfEnemy === Enemies.enemySmallOne) {
-                enemy.dy = EnemiesSpeeds.enemySmallOne; // dynamically
+                enemy.dy = EnemiesSpeeds.enemySmallOne;
+            } else if (enemy.numOfEnemy === Enemies.enemySmallTwo) {
+                enemy.dy = EnemiesSpeeds.enemySmallTwo;
+            } else if (enemy.numOfEnemy === Enemies.enemyBigOne) {
+                enemy.dy = EnemiesSpeeds.enemyBigOne;
             }
 
             // add to array
@@ -139,10 +148,76 @@ export class Game {
 
             // delete off the screen
             if (typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
-                if (enemy.y > this.canvas.height - enemy.frameHeight) {
-                    enemy.y = this.canvas.height - enemy.frameHeight;
+                if (enemy.numOfEnemy === Enemies.enemyBigOne) {
+                    if (enemy.y > this.canvas.height - enemy.frameHeight + 25) {
+                        enemy.y = this.canvas.height - enemy.frameHeight;
+
+                        arr.splice(idx, 1);
+
+                        if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
+                            this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
+                        }
+                    }
+                } else if (enemy.numOfEnemy === Enemies.enemySmallOne || enemy.numOfEnemy === Enemies.enemySmallTwo) {
+                    if (enemy.y > this.canvas.height - enemy.frameHeight) {
+                        enemy.y = this.canvas.height - enemy.frameHeight;
+
+                        arr.splice(idx, 1);
+
+                        if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
+                            this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
+                        }
+                    }
                 }
             }
         });
+    }
+
+    initExplosion(x: number, y: number, numOfEnemy: number): void {
+        const explosion: Explosion = new Explosion(numOfEnemy);
+
+        explosion.img.addEventListener('load', () => {
+            explosion.specifyDimensions();
+
+            explosion.x = x;
+            explosion.y = y;
+
+            this.explosions.push(explosion);
+        });
+    }
+
+    drawExplosions(): void {
+        // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
+
+        this.explosions.forEach((explosion, idx, arr) => {
+            // increase constraint counter
+            explosion.speedCounter++;
+
+            // regulate speed frames
+            if (explosion.speedCounter > explosion.speedConstraint) {
+                explosion.speedCounter = 0;
+                explosion.currentFrame++;
+            }
+
+            // delete after one loop
+            if (explosion.currentFrame >= explosion.totalFrames) {
+                arr.splice(idx, 1);
+                // explosion.currentFrame = 0;
+            }
+
+            // starting cut point
+            if (typeof explosion.frameWidth === 'number') {
+                explosion.sx = explosion.currentFrame * explosion.frameWidth;
+            }
+
+            // draw
+            if (typeof explosion.frameWidth === 'number' && typeof explosion.frameHeight === 'number' && typeof explosion.sx === 'number' && typeof explosion.x === 'number' && typeof explosion.y === 'number') {
+                this.ctx.drawImage(explosion.img, explosion.sx, explosion.sy, explosion.frameWidth, explosion.frameHeight, explosion.x, explosion.y, explosion.frameWidth, explosion.frameHeight);
+            }
+        });
+    }
+
+    pickRandomEnemy(): void {
+        console.log(Object.keys(Enemies).length / 2);
     }
 }

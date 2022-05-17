@@ -19,7 +19,7 @@ export class Spaceship {
     public y: number | undefined = undefined;
 
     public dx: number = 10;
-    private dy: null = null;
+    public dy: null = null;
 
     public sx: number | undefined = undefined;
     public sy: number = 0;

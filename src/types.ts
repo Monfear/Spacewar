@@ -6,12 +6,17 @@ export enum Enemies {
 
 export enum EnemiesSpeeds {
     enemySmallOne = 1.5,
-    enemySmallTwo = 0,
-    enemyBigOne = 0,
+    enemySmallTwo = 3,
+    enemyBigOne = 0.7,
 }
 
 export enum EnemiesFrames {
     enemySmallOne = 8,
     enemySmallTwo = 5,
     enemyBigOne = 8,
+}
+
+export enum Explosions {
+    explosionSmall = 1,
+    explosionBig = 2,
 }
