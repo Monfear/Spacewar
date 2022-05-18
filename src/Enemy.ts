@@ -24,6 +24,8 @@ export class Enemy {
     public sx: number | undefined = undefined;
     public sy: number = 0;
 
+    public shiftY: number = 25;
+
     constructor(private canvas: HTMLCanvasElement, public numOfEnemy: number) {
         this.setImgSrc();
     }

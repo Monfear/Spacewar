@@ -147,29 +147,49 @@ export class Game {
             }
 
             // delete off the screen
+
+            if (enemy.numOfEnemy === Enemies.enemyBigOne) {
+                enemy.shiftY = 25;
+            } else if (enemy.numOfEnemy === Enemies.enemySmallOne || enemy.numOfEnemy === Enemies.enemySmallTwo) {
+                enemy.shiftY = 0;
+            }
+
             if (typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
-                if (enemy.numOfEnemy === Enemies.enemyBigOne) {
-                    if (enemy.y > this.canvas.height - enemy.frameHeight + 25) {
-                        enemy.y = this.canvas.height - enemy.frameHeight;
+                if (enemy.y > this.canvas.height - enemy.frameHeight + enemy.shiftY) {
+                    enemy.y = this.canvas.height - enemy.frameHeight;
 
-                        arr.splice(idx, 1);
+                    arr.splice(idx, 1);
 
-                        if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
-                            this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
-                        }
-                    }
-                } else if (enemy.numOfEnemy === Enemies.enemySmallOne || enemy.numOfEnemy === Enemies.enemySmallTwo) {
-                    if (enemy.y > this.canvas.height - enemy.frameHeight) {
-                        enemy.y = this.canvas.height - enemy.frameHeight;
-
-                        arr.splice(idx, 1);
-
-                        if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
-                            this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
-                        }
+                    if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
+                        this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
                     }
                 }
             }
+
+            // delete off the screen
+            // if (typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
+            //     if (enemy.numOfEnemy === Enemies.enemyBigOne) {
+            //         if (enemy.y > this.canvas.height - enemy.frameHeight + 25) {
+            //             enemy.y = this.canvas.height - enemy.frameHeight;
+
+            //             arr.splice(idx, 1);
+
+            //             if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
+            //                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
+            //             }
+            //         }
+            //     } else if (enemy.numOfEnemy === Enemies.enemySmallOne || enemy.numOfEnemy === Enemies.enemySmallTwo) {
+            //         if (enemy.y > this.canvas.height - enemy.frameHeight) {
+            //             enemy.y = this.canvas.height - enemy.frameHeight;
+
+            //             arr.splice(idx, 1);
+
+            //             if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
+            //                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
+            //             }
+            //         }
+            //     }
+            // }
         });
     }
 

@@ -31,8 +31,6 @@ export class Explosion {
     setImgSrc() {
         if (this.numOfEnemy === Enemies.enemySmallOne || this.numOfEnemy == Enemies.enemySmallTwo) {
             this.img.src = require('./../img/explosion-small_sprites.png');
-            console.log('small');
-            console.log(this.numOfEnemy);
         } else if (this.numOfEnemy === Enemies.enemyBigOne) {
             this.img.src = require('./../img/explosion-big_sprites.png');
         } else {
