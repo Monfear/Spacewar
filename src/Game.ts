@@ -46,6 +46,9 @@ export class Game {
 
         // explosions
         this.drawExplosions();
+
+        // collisons
+        this.checkColisions();
     };
 
     private initSpaceship(): void {
@@ -146,14 +149,14 @@ export class Game {
                 this.ctx.drawImage(enemy.img, enemy.sx, enemy.sy, enemy.frameWidth, enemy.frameHeight, enemy.x, enemy.y, enemy.frameWidth, enemy.frameHeight);
             }
 
-            // delete off the screen
-
+            // adjust y position
             if (enemy.numOfEnemy === Enemies.enemyBigOne) {
                 enemy.shiftY = 25;
             } else if (enemy.numOfEnemy === Enemies.enemySmallOne || enemy.numOfEnemy === Enemies.enemySmallTwo) {
                 enemy.shiftY = 0;
             }
 
+            // delete off the screen
             if (typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
                 if (enemy.y > this.canvas.height - enemy.frameHeight + enemy.shiftY) {
                     enemy.y = this.canvas.height - enemy.frameHeight;
@@ -165,31 +168,6 @@ export class Game {
                     }
                 }
             }
-
-            // delete off the screen
-            // if (typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
-            //     if (enemy.numOfEnemy === Enemies.enemyBigOne) {
-            //         if (enemy.y > this.canvas.height - enemy.frameHeight + 25) {
-            //             enemy.y = this.canvas.height - enemy.frameHeight;
-
-            //             arr.splice(idx, 1);
-
-            //             if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
-            //                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
-            //             }
-            //         }
-            //     } else if (enemy.numOfEnemy === Enemies.enemySmallOne || enemy.numOfEnemy === Enemies.enemySmallTwo) {
-            //         if (enemy.y > this.canvas.height - enemy.frameHeight) {
-            //             enemy.y = this.canvas.height - enemy.frameHeight;
-
-            //             arr.splice(idx, 1);
-
-            //             if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
-            //                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
-            //             }
-            //         }
-            //     }
-            // }
         });
     }
 
@@ -237,7 +215,26 @@ export class Game {
         });
     }
 
+    checkColisions(): void {
+        // bullets
+        this.spaceship.bullets.forEach((bullet, bulletIdx, bulletsArr) => {
+            // enemies
+            this.enemies.forEach((enemy, enemyIdx, enemiesArr) => {
+                if (typeof bullet.y === 'number' && typeof bullet.x === 'number' && typeof bullet.frameHeight === 'number' && typeof bullet.frameWidth === 'number' && typeof enemy.x === 'number' && typeof enemy.frameWidth === 'number' && typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
+                    if (bullet.x + bullet.frameWidth / 2 > enemy.x && bullet.x + bullet.frameWidth / 2 < enemy.x + enemy.frameWidth && bullet.y + bullet.frameHeight / 1.5 < enemy.y + enemy.frameHeight && bullet.y + bullet.frameHeight > enemy.y) {
+                        bulletsArr.splice(bulletIdx, 1);
+                        enemiesArr.splice(enemyIdx, 1);
+                    }
+                }
+            });
+        });
+    }
+
     pickRandomEnemy(): void {
         console.log(Object.keys(Enemies).length / 2);
     }
 }
+
+// if (bullet.y < enemy.y + enemy.frameHeight && bullet.y + bullet.frameHeight > enemy.y) {
+//     console.log('os y');
+// }
