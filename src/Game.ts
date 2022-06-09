@@ -5,6 +5,7 @@ import { Enemies, EnemiesSpeeds } from './types';
 import { Spaceship } from './Spaceship';
 import { Enemy } from './Enemy';
 import { Explosion } from './Explosion';
+import { Bullet } from './Bullet';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
@@ -16,17 +17,32 @@ export class Game {
 
     private explosions: Explosion[] = [];
 
+    private bigEnemyCounter: number = 0;
+    private bigEnemyConstraint: number = 3;
+
+    private insertEnemyIntervalId: NodeJS.Timer | null = null;
+    private insertEnemyTime: number = 3000;
+
     constructor() {
         this.setCanvasDimensions();
+
         this.initGameLoop();
 
         this.initSpaceship();
-        this.initEnemy();
+
+        this.createEnemies();
+        // this.initEnemy();
     }
 
     private setCanvasDimensions(): void {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+    }
+
+    private createEnemies(): void {
+        this.insertEnemyIntervalId = setInterval(() => {
+            this.initEnemy();
+        }, this.insertEnemyTime);
     }
 
     private initGameLoop = (): void => {
@@ -47,8 +63,8 @@ export class Game {
         // explosions
         this.drawExplosions();
 
-        // collisons
-        this.checkColisions();
+        // shot collisions
+        this.checkShotColisions();
     };
 
     private initSpaceship(): void {
@@ -90,7 +106,7 @@ export class Game {
     }
 
     private initEnemy(): void {
-        const enemy: Enemy = new Enemy(this.canvas, Enemies.enemySmallOne);
+        const enemy: Enemy = new Enemy(this.canvas, this.pickRandomEnemy());
 
         enemy.img.addEventListener('load', () => {
             enemy.specifyDimensions();
@@ -168,6 +184,17 @@ export class Game {
                     }
                 }
             }
+
+            // collision with spaceship
+            if (typeof enemy.y === 'number' && typeof enemy.x === 'number' && typeof enemy.frameHeight === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof enemy.frameWidth === 'number') {
+                if (enemy.y + enemy.frameHeight - enemy.shiftY >= this.spaceship.y && enemy.x + enemy.frameWidth >= this.spaceship.x && enemy.x <= this.spaceship.x + this.spaceship.frameWidth) {
+                    arr.splice(idx, 1);
+
+                    if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
+                        this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
+                    }
+                }
+            }
         });
     }
 
@@ -215,13 +242,14 @@ export class Game {
         });
     }
 
-    checkColisions(): void {
+    checkShotColisions(): void {
         // bullets
-        this.spaceship.bullets.forEach((bullet, bulletIdx, bulletsArr) => {
+        this.spaceship.bullets.forEach((bullet: Bullet, bulletIdx: number, bulletsArr: Bullet[]): void => {
             // enemies
-            this.enemies.forEach((enemy, enemyIdx, enemiesArr) => {
+            this.enemies.forEach((enemy: Enemy, enemyIdx: number, enemiesArr: Enemy[]): void => {
                 if (typeof bullet.y === 'number' && typeof bullet.x === 'number' && typeof bullet.frameHeight === 'number' && typeof bullet.frameWidth === 'number' && typeof enemy.x === 'number' && typeof enemy.frameWidth === 'number' && typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
                     if (bullet.x + bullet.frameWidth / 2 > enemy.x && bullet.x + bullet.frameWidth / 2 < enemy.x + enemy.frameWidth && bullet.y + bullet.frameHeight / 1.5 < enemy.y + enemy.frameHeight && bullet.y + bullet.frameHeight > enemy.y) {
+                        this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
                         bulletsArr.splice(bulletIdx, 1);
                         enemiesArr.splice(enemyIdx, 1);
                     }
@@ -230,11 +258,21 @@ export class Game {
         });
     }
 
-    pickRandomEnemy(): void {
-        console.log(Object.keys(Enemies).length / 2);
+    pickRandomEnemy(): number {
+        const randomNum: number = Math.floor((Math.random() * Object.keys(Enemies).length) / 2 + 1);
+
+        if (randomNum === Enemies.enemyBigOne) {
+            this.bigEnemyCounter++;
+
+            if (this.bigEnemyCounter === this.bigEnemyConstraint) {
+                this.bigEnemyCounter = 0;
+
+                return Enemies.enemyBigOne;
+            } else {
+                return Enemies.enemySmallOne;
+            }
+        } else {
+            return randomNum;
+        }
     }
 }
-
-// if (bullet.y < enemy.y + enemy.frameHeight && bullet.y + bullet.frameHeight > enemy.y) {
-//     console.log('os y');
-// }
