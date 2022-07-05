@@ -1,4 +1,4 @@
-import { Enemies, EnemiesFrames } from './types';
+import { Enemies, EnemiesFrames, EnemiesSpeeds } from './types';
 
 export class Enemy {
     public img: HTMLImageElement = new Image();

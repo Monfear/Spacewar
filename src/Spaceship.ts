@@ -24,6 +24,8 @@ export class Spaceship {
     public sx: number | undefined = undefined;
     public sy: number = 0;
 
+    public shiftY: number = 40;
+
     public isArrowRight: boolean = false;
     public isArrowLeft: boolean = false;
 
@@ -34,6 +36,26 @@ export class Spaceship {
 
         this.setMovementListeners();
         this.setShotListener();
+    }
+
+    public init(): void {
+        this.img.addEventListener('load', () => {
+            this.specifyDimensions();
+
+            // starting position
+            if (typeof this.frameWidth === 'number' && typeof this.height === 'number') {
+                this.x = this.canvas.width / 2 - this.frameWidth / 2;
+                this.y = this.canvas.height - this.height + this.shiftY;
+            }
+        });
+    }
+
+    public specifyDimensions(): void {
+        this.width = this.img.width;
+        this.height = this.img.height;
+
+        this.frameWidth = this.img.width / this.totalFrames;
+        this.frameHeight = this.img.height;
     }
 
     private setMovementListeners(): void {
@@ -54,12 +76,30 @@ export class Spaceship {
         });
     }
 
-    public specifyDimensions(): void {
-        this.width = this.img.width;
-        this.height = this.img.height;
+    public draw(): void {
+        // increase constraint counter
+        this.speedCounter++;
 
-        this.frameWidth = this.img.width / this.totalFrames;
-        this.frameHeight = this.img.height;
+        // regulate speed frames
+        if (this.speedCounter > this.speedConstraint) {
+            this.speedCounter = 0;
+            this.currentFrame++;
+        }
+
+        // reset current frame
+        if (this.currentFrame === this.totalFrames) {
+            this.currentFrame = 0;
+        }
+
+        // starting cut point
+        if (typeof this.frameWidth === 'number') {
+            this.sx = this.currentFrame * this.frameWidth;
+        }
+
+        // draw
+        if (typeof this.frameWidth === 'number' && typeof this.frameHeight === 'number' && typeof this.x === 'number' && typeof this.y === 'number' && typeof this.sx === 'number') {
+            this.ctx.drawImage(this.img, this.sx, this.sy, this.frameWidth, this.frameHeight, this.x, this.y, this.frameWidth, this.frameHeight);
+        }
     }
 
     private handleKeys(e: KeyboardEvent, isActive: boolean): void {

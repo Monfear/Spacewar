@@ -14,21 +14,20 @@ export class Game {
     private spaceship: Spaceship = new Spaceship(this.canvas, this.ctx);
 
     private enemies: Enemy[] = [];
-
     private explosions: Explosion[] = [];
 
-    private bigEnemyCounter: number = 0;
-    private bigEnemyConstraint: number = 3;
+    private bigEnemyRespawnCounter: number = 0;
+    private bigEnemyRespawnConstraint: number = 3;
 
-    private insertEnemyIntervalId: NodeJS.Timer | null = null;
-    private insertEnemyTime: number = 3000;
+    private respawnEnemyIntervalId: NodeJS.Timer | null = null;
+    private respawnEnemyTime: number = 3000;
 
     constructor() {
         this.setCanvasDimensions();
 
         this.initGameLoop();
 
-        this.initSpaceship();
+        this.spaceship.init();
 
         this.createEnemies();
         // this.initEnemy();
@@ -39,21 +38,15 @@ export class Game {
         this.canvas.height = window.innerHeight;
     }
 
-    private createEnemies(): void {
-        this.insertEnemyIntervalId = setInterval(() => {
-            this.initEnemy();
-        }, this.insertEnemyTime);
-    }
-
     private initGameLoop = (): void => {
-        // loop
+        // looping
         requestAnimationFrame(this.initGameLoop);
 
         // clear
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         // spaceship
-        this.drawSpaceship();
+        this.spaceship.draw();
         this.spaceship.setMovement();
         this.spaceship.drawBullets();
 
@@ -67,42 +60,10 @@ export class Game {
         this.checkShotColisions();
     };
 
-    private initSpaceship(): void {
-        this.spaceship.img.addEventListener('load', () => {
-            this.spaceship.specifyDimensions();
-
-            // starting position
-            if (typeof this.spaceship.frameWidth === 'number' && typeof this.spaceship.height === 'number') {
-                this.spaceship.x = this.canvas.width / 2 - this.spaceship.frameWidth / 2;
-                this.spaceship.y = this.canvas.height - this.spaceship.height + 40;
-            }
-        });
-    }
-
-    private drawSpaceship(): void {
-        // increase constraint counter
-        this.spaceship.speedCounter++;
-
-        // regulate speed frames
-        if (this.spaceship.speedCounter > this.spaceship.speedConstraint) {
-            this.spaceship.speedCounter = 0;
-            this.spaceship.currentFrame++;
-        }
-
-        // reset current frame
-        if (this.spaceship.currentFrame === this.spaceship.totalFrames) {
-            this.spaceship.currentFrame = 0;
-        }
-
-        // starting cut point
-        if (typeof this.spaceship.frameWidth === 'number') {
-            this.spaceship.sx = this.spaceship.currentFrame * this.spaceship.frameWidth;
-        }
-
-        // draw
-        if (typeof this.spaceship.frameWidth === 'number' && typeof this.spaceship.frameHeight === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.sx === 'number') {
-            this.ctx.drawImage(this.spaceship.img, this.spaceship.sx, this.spaceship.sy, this.spaceship.frameWidth, this.spaceship.frameHeight, this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth, this.spaceship.frameHeight);
-        }
+    private createEnemies(): void {
+        this.respawnEnemyIntervalId = setInterval(() => {
+            this.initEnemy();
+        }, this.respawnEnemyTime);
     }
 
     private initEnemy(): void {
@@ -262,10 +223,10 @@ export class Game {
         const randomNum: number = Math.floor((Math.random() * Object.keys(Enemies).length) / 2 + 1);
 
         if (randomNum === Enemies.enemyBigOne) {
-            this.bigEnemyCounter++;
+            this.bigEnemyRespawnCounter++;
 
-            if (this.bigEnemyCounter === this.bigEnemyConstraint) {
-                this.bigEnemyCounter = 0;
+            if (this.bigEnemyRespawnCounter === this.bigEnemyRespawnConstraint) {
+                this.bigEnemyRespawnCounter = 0;
 
                 return Enemies.enemyBigOne;
             } else {
