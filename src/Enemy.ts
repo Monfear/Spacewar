@@ -1,4 +1,5 @@
-import { Enemies, EnemiesFrames, EnemiesSpeeds } from './types';
+import { Enemies, EnemiesFrames, EnemiesLifes, EnemiesSpeeds } from './types';
+import { Explosion } from './Explosion';
 
 export class Enemy {
     public img: HTMLImageElement = new Image();
@@ -18,7 +19,6 @@ export class Enemy {
     public x: number | undefined = undefined;
     public y: number | undefined = undefined;
 
-    public dx: number | undefined | null = null; // tylko w jednym rodzaju
     public dy: number | undefined = undefined;
 
     public sx: number | undefined = undefined;
@@ -26,8 +26,11 @@ export class Enemy {
 
     public shiftY: number = 25;
 
+    public lifes: number | undefined = undefined;
+
     constructor(private canvas: HTMLCanvasElement, public numOfEnemy: number) {
         this.setImgSrc();
+        this.setLifes();
     }
 
     setImgSrc(): void {
@@ -57,6 +60,16 @@ export class Enemy {
         if (typeof this.totalFrames === 'number') {
             this.frameWidth = this.img.width / this.totalFrames;
             this.frameHeight = this.img.height;
+        }
+    }
+
+    setLifes(): void {
+        if (this.numOfEnemy === Enemies.enemySmallOne) {
+            this.lifes = EnemiesLifes.enemySmallOne;
+        } else if (this.numOfEnemy === Enemies.enemySmallTwo) {
+            this.lifes = EnemiesLifes.enemySmallTwo;
+        } else if (this.numOfEnemy === EnemiesLifes.enemyBigOne) {
+            this.lifes = EnemiesLifes.enemyBigOne;
         }
     }
 

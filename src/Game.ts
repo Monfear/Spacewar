@@ -29,8 +29,8 @@ export class Game {
 
         this.spaceship.init();
 
-        this.createEnemies();
-        // this.initEnemy();
+        // this.createEnemies();
+        this.initEnemy();
     }
 
     private setCanvasDimensions(): void {
@@ -210,9 +210,17 @@ export class Game {
             this.enemies.forEach((enemy: Enemy, enemyIdx: number, enemiesArr: Enemy[]): void => {
                 if (typeof bullet.y === 'number' && typeof bullet.x === 'number' && typeof bullet.frameHeight === 'number' && typeof bullet.frameWidth === 'number' && typeof enemy.x === 'number' && typeof enemy.frameWidth === 'number' && typeof enemy.y === 'number' && typeof enemy.frameHeight === 'number') {
                     if (bullet.x + bullet.frameWidth / 2 > enemy.x && bullet.x + bullet.frameWidth / 2 < enemy.x + enemy.frameWidth && bullet.y + bullet.frameHeight / 1.5 < enemy.y + enemy.frameHeight && bullet.y + bullet.frameHeight > enemy.y) {
-                        this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
-                        bulletsArr.splice(bulletIdx, 1);
-                        enemiesArr.splice(enemyIdx, 1);
+                        if (typeof enemy.lifes === 'number') {
+                            enemy.lifes--;
+                            bulletsArr.splice(bulletIdx, 1);
+
+                            if (enemy.lifes <= 0) {
+                                this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
+                                enemiesArr.splice(enemyIdx, 1);
+
+                                console.log(enemy.lifes);
+                            }
+                        }
                     }
                 }
             });
