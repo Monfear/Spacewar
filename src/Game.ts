@@ -1,5 +1,7 @@
 // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
 
+import { loadFont } from './helpers';
+
 import { Enemies, EnemiesSpeeds } from './types';
 
 import { Spaceship } from './Spaceship';
@@ -22,8 +24,24 @@ export class Game {
     private respawnEnemyIntervalId: NodeJS.Timer | null = null;
     private respawnEnemyTime: number = 3000;
 
+    private timerIntervalId: NodeJS.Timer | null = null;
+    private timerValue: number = 1;
+    private timerTime: number = 1000;
+
+    private marginX: number = 30;
+    private marginY: number = 50;
+
+    private score: number = 0;
+
+    private miliseconds: number = 0;
+    private seconds: number = 0;
+    private minutes: number = 0;
+
     constructor() {
         this.setCanvasDimensions();
+
+        loadFont();
+        this.setAudiowideFont();
 
         this.initGameLoop();
 
@@ -31,6 +49,8 @@ export class Game {
 
         // this.createEnemies();
         this.initEnemy();
+
+        this.setTimer();
     }
 
     private setCanvasDimensions(): void {
@@ -58,7 +78,41 @@ export class Game {
 
         // shot collisions
         this.checkShotColisions();
+
+        // points
+        this.drawPoints();
+
+        // timer
+        this.drawTimer();
     };
+
+    private setAudiowideFont(): void {
+        this.ctx.font = '34px Audiowide';
+        this.ctx.fillStyle = 'white';
+    }
+
+    private drawPoints(): void {
+        this.ctx.fillText('Score: ' + this.score, this.marginX, this.marginY);
+    }
+
+    private setTimer(): void {
+        this.timerIntervalId = setInterval(() => {
+            this.seconds += this.timerValue;
+
+            if (this.seconds > 59) {
+                this.seconds = 0;
+                this.minutes += this.timerValue;
+            }
+        }, this.timerTime);
+    }
+
+    private drawTimer(): void {
+        let scoreText: string = `${this.minutes < 10 ? '0' + this.minutes : this.minutes}:${this.seconds < 10 ? '0' + this.seconds : this.seconds}`;
+
+        let scoreTextWidth: number = this.ctx.measureText(scoreText).width;
+
+        this.ctx.fillText(scoreText, this.canvas.width / 2 - scoreTextWidth / 2, this.marginY);
+    }
 
     private createEnemies(): void {
         this.respawnEnemyIntervalId = setInterval(() => {
