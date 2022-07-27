@@ -26,3 +26,8 @@ export enum Explosions {
     explosionSmall = 1,
     explosionBig = 2,
 }
+
+export enum Icons {
+    live = 'live',
+    barrier = 'barrier',
+}

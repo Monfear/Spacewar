@@ -2,12 +2,13 @@
 
 import { loadFont } from './helpers';
 
-import { Enemies, EnemiesSpeeds } from './types';
+import { Enemies, EnemiesSpeeds, Icons } from './types';
 
 import { Spaceship } from './Spaceship';
 import { Enemy } from './Enemy';
 import { Explosion } from './Explosion';
 import { Bullet } from './Bullet';
+import { Icon } from './Icon';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
@@ -37,6 +38,9 @@ export class Game {
     private seconds: number = 0;
     private minutes: number = 0;
 
+    private hpIcons: Icon[] = [];
+    private shieldIcons: Icon[] = [];
+
     constructor() {
         this.setCanvasDimensions();
 
@@ -51,6 +55,8 @@ export class Game {
         this.initEnemy();
 
         this.setTimer();
+
+        this.createIcons();
     }
 
     private setCanvasDimensions(): void {
@@ -84,6 +90,15 @@ export class Game {
 
         // timer
         this.drawTimer();
+
+        // icons
+        this.hpIcons.forEach((icon) => {
+            icon.draw();
+        });
+
+        this.shieldIcons.forEach((icon) => {
+            icon.draw();
+        });
     };
 
     private setAudiowideFont(): void {
@@ -112,6 +127,25 @@ export class Game {
         let scoreTextWidth: number = this.ctx.measureText(scoreText).width;
 
         this.ctx.fillText(scoreText, this.canvas.width / 2 - scoreTextWidth / 2, this.marginY);
+    }
+
+    private createIcons(): void {
+        const shiftX: number = 50;
+        const shiftY: number = 50;
+
+        for (let i = 0; i < this.spaceship.lives; i++) {
+            const hpIcon: Icon = new Icon(this.canvas, this.ctx, i * shiftX, 0, Icons.live);
+            hpIcon.init();
+
+            this.hpIcons.push(hpIcon);
+        }
+
+        for (let i = 0; i < this.spaceship.shields; i++) {
+            const shieldIcon: Icon = new Icon(this.canvas, this.ctx, i * shiftX - 5, shiftY, Icons.barrier);
+            shieldIcon.init();
+
+            this.shieldIcons.push(shieldIcon);
+        }
     }
 
     private createEnemies(): void {
@@ -272,7 +306,9 @@ export class Game {
                                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
                                 enemiesArr.splice(enemyIdx, 1);
 
-                                console.log(enemy.lifes);
+                                if (typeof enemy.points === 'number') {
+                                    this.score += enemy.points;
+                                }
                             }
                         }
                     }

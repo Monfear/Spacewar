@@ -28,9 +28,12 @@ export class Enemy {
 
     public lifes: number | undefined = undefined;
 
+    public points: number | undefined = undefined;
+
     constructor(private canvas: HTMLCanvasElement, public numOfEnemy: number) {
         this.setImgSrc();
         this.setLifes();
+        this.setPoints();
     }
 
     setImgSrc(): void {
@@ -54,7 +57,7 @@ export class Enemy {
         } else if (this.numOfEnemy === Enemies.enemyBigOne) {
             this.totalFrames = EnemiesFrames.enemyBigOne;
         } else {
-            console.warn('wrong num of enemy');
+            console.warn('wrong enemy num');
         }
 
         if (typeof this.totalFrames === 'number') {
@@ -70,6 +73,18 @@ export class Enemy {
             this.lifes = EnemiesLifes.enemySmallTwo;
         } else if (this.numOfEnemy === EnemiesLifes.enemyBigOne) {
             this.lifes = EnemiesLifes.enemyBigOne;
+        }
+    }
+
+    setPoints(): void {
+        if (this.numOfEnemy === Enemies.enemySmallOne) {
+            this.points = 10;
+        } else if (this.numOfEnemy === Enemies.enemySmallTwo) {
+            this.points = 20;
+        } else if (this.numOfEnemy === Enemies.enemyBigOne) {
+            this.points = 50;
+        } else {
+            console.warn('wrong enemy num');
         }
     }
 

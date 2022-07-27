@@ -31,6 +31,9 @@ export class Spaceship {
 
     public bullets: Bullet[] = [];
 
+    public lives: number = 3;
+    public shields: number = 1;
+
     constructor(private canvas: HTMLCanvasElement, private ctx: CanvasRenderingContext2D) {
         this.img.src = require('./../img/spaceship_sprites.png');
 
