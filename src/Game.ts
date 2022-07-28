@@ -1,6 +1,6 @@
 // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
 
-import { loadFont } from './helpers';
+import { loadFont } from './utils';
 
 import { Enemies, EnemiesSpeeds, Icons } from './types';
 
@@ -9,12 +9,15 @@ import { Enemy } from './Enemy';
 import { Explosion } from './Explosion';
 import { Bullet } from './Bullet';
 import { Icon } from './Icon';
+import { Backdrop } from './Backdrop';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
     private spaceship: Spaceship = new Spaceship(this.canvas, this.ctx);
+
+    private backdrop: Backdrop = new Backdrop();
 
     private enemies: Enemy[] = [];
     private explosions: Explosion[] = [];
@@ -34,7 +37,6 @@ export class Game {
 
     private score: number = 0;
 
-    private miliseconds: number = 0;
     private seconds: number = 0;
     private minutes: number = 0;
 
@@ -238,6 +240,9 @@ export class Game {
             if (typeof enemy.y === 'number' && typeof enemy.x === 'number' && typeof enemy.frameHeight === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof enemy.frameWidth === 'number') {
                 if (enemy.y + enemy.frameHeight - enemy.shiftY >= this.spaceship.y && enemy.x + enemy.frameWidth >= this.spaceship.x && enemy.x <= this.spaceship.x + this.spaceship.frameWidth) {
                     arr.splice(idx, 1);
+                    this.spaceship.lives--;
+                    this.hpIcons.pop();
+                    this.backdrop.wink();
 
                     if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
                         this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
@@ -276,7 +281,6 @@ export class Game {
             // delete after one loop
             if (explosion.currentFrame >= explosion.totalFrames) {
                 arr.splice(idx, 1);
-                // explosion.currentFrame = 0;
             }
 
             // starting cut point
