@@ -105,7 +105,7 @@ export class Spaceship {
         }
     }
 
-    private handleKeys(e: KeyboardEvent, isActive: boolean): void {
+    private handleKeys(e: KeyboardEvent, isActive: boolean) {
         if (e.key === 'ArrowRight' || e.code === 'ArrowRight') {
             this.isArrowRight = isActive;
         } else if (e.key === 'ArrowLeft' || e.code === 'ArrowLeft') {

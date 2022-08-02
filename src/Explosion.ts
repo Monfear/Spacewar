@@ -1,4 +1,4 @@
-import { Enemies, Explosions } from './types';
+import { Vehicles, Explosions } from './types';
 
 export class Explosion {
     public img: HTMLImageElement = new Image();
@@ -24,17 +24,27 @@ export class Explosion {
     public sx: number | undefined = undefined;
     public sy: number = 0;
 
-    constructor(public numOfEnemy: number) {
+    constructor(public numOfVehicle: number) {
         this.setImgSrc();
+        this.adjustToAlly();
     }
 
     setImgSrc() {
-        if (this.numOfEnemy === Enemies.enemySmallOne || this.numOfEnemy == Enemies.enemySmallTwo) {
+        if (this.numOfVehicle === Vehicles.enemySmallOne || this.numOfVehicle == Vehicles.enemySmallTwo) {
             this.img.src = require('./../img/explosion-small_sprites.png');
-        } else if (this.numOfEnemy === Enemies.enemyBigOne) {
+        } else if (this.numOfVehicle === Vehicles.enemyBigOne) {
             this.img.src = require('./../img/explosion-big_sprites.png');
+        } else if (this.numOfVehicle === Vehicles.player) {
+            this.img.src = require('./../img/spaceship-explosion_sprites.png');
         } else {
             console.warn('wrong num of enemy');
+        }
+    }
+
+    adjustToAlly(): void {
+        if (this.numOfVehicle === Vehicles.player) {
+            this.totalFrames = 9;
+            this.speedConstraint = 10;
         }
     }
 

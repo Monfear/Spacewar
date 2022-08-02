@@ -1,6 +1,4 @@
-import { Enemies, EnemiesFrames, EnemiesLifes, EnemiesSpeeds } from './types';
-import { Explosion } from './Explosion';
-
+import { Vehicles, EnemiesFrames, EnemiesLifes } from './types';
 export class Enemy {
     public img: HTMLImageElement = new Image();
 
@@ -37,11 +35,11 @@ export class Enemy {
     }
 
     setImgSrc(): void {
-        if (this.numOfEnemy === Enemies.enemySmallOne) {
+        if (this.numOfEnemy === Vehicles.enemySmallOne) {
             this.img.src = require('./../img/enemy_1_sprites.png');
-        } else if (this.numOfEnemy === Enemies.enemySmallTwo) {
+        } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
             this.img.src = require('./../img/enemy_2_sprites.png');
-        } else if (this.numOfEnemy === Enemies.enemyBigOne) {
+        } else if (this.numOfEnemy === Vehicles.enemyBigOne) {
             this.img.src = require('./../img/enemy_3_sprites.png');
         }
     }
@@ -50,11 +48,11 @@ export class Enemy {
         this.width = this.img.width;
         this.height = this.img.height;
 
-        if (this.numOfEnemy === Enemies.enemySmallOne) {
+        if (this.numOfEnemy === Vehicles.enemySmallOne) {
             this.totalFrames = EnemiesFrames.enemySmallOne;
-        } else if (this.numOfEnemy === Enemies.enemySmallTwo) {
+        } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
             this.totalFrames = EnemiesFrames.enemySmallTwo;
-        } else if (this.numOfEnemy === Enemies.enemyBigOne) {
+        } else if (this.numOfEnemy === Vehicles.enemyBigOne) {
             this.totalFrames = EnemiesFrames.enemyBigOne;
         } else {
             console.warn('wrong enemy num');
@@ -67,9 +65,9 @@ export class Enemy {
     }
 
     setLifes(): void {
-        if (this.numOfEnemy === Enemies.enemySmallOne) {
+        if (this.numOfEnemy === Vehicles.enemySmallOne) {
             this.lifes = EnemiesLifes.enemySmallOne;
-        } else if (this.numOfEnemy === Enemies.enemySmallTwo) {
+        } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
             this.lifes = EnemiesLifes.enemySmallTwo;
         } else if (this.numOfEnemy === EnemiesLifes.enemyBigOne) {
             this.lifes = EnemiesLifes.enemyBigOne;
@@ -77,11 +75,11 @@ export class Enemy {
     }
 
     setPoints(): void {
-        if (this.numOfEnemy === Enemies.enemySmallOne) {
+        if (this.numOfEnemy === Vehicles.enemySmallOne) {
             this.points = 10;
-        } else if (this.numOfEnemy === Enemies.enemySmallTwo) {
+        } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
             this.points = 20;
-        } else if (this.numOfEnemy === Enemies.enemyBigOne) {
+        } else if (this.numOfEnemy === Vehicles.enemyBigOne) {
             this.points = 50;
         } else {
             console.warn('wrong enemy num');

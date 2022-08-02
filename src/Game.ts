@@ -2,7 +2,7 @@
 
 import { loadFont } from './utils';
 
-import { Enemies, EnemiesSpeeds, Icons } from './types';
+import { Vehicles, EnemiesSpeeds, Icons } from './types';
 
 import { Spaceship } from './Spaceship';
 import { Enemy } from './Enemy';
@@ -159,6 +159,8 @@ export class Game {
     private initEnemy(): void {
         const enemy: Enemy = new Enemy(this.canvas, this.pickRandomEnemy());
 
+        console.log(enemy);
+
         enemy.img.addEventListener('load', () => {
             enemy.specifyDimensions();
 
@@ -170,11 +172,11 @@ export class Game {
             }
 
             // step
-            if (enemy.numOfEnemy === Enemies.enemySmallOne) {
+            if (enemy.numOfEnemy === Vehicles.enemySmallOne) {
                 enemy.dy = EnemiesSpeeds.enemySmallOne;
-            } else if (enemy.numOfEnemy === Enemies.enemySmallTwo) {
+            } else if (enemy.numOfEnemy === Vehicles.enemySmallTwo) {
                 enemy.dy = EnemiesSpeeds.enemySmallTwo;
-            } else if (enemy.numOfEnemy === Enemies.enemyBigOne) {
+            } else if (enemy.numOfEnemy === Vehicles.enemyBigOne) {
                 enemy.dy = EnemiesSpeeds.enemyBigOne;
             }
 
@@ -217,9 +219,9 @@ export class Game {
             }
 
             // adjust y position
-            if (enemy.numOfEnemy === Enemies.enemyBigOne) {
+            if (enemy.numOfEnemy === Vehicles.enemyBigOne) {
                 enemy.shiftY = 25;
-            } else if (enemy.numOfEnemy === Enemies.enemySmallOne || enemy.numOfEnemy === Enemies.enemySmallTwo) {
+            } else if (enemy.numOfEnemy === Vehicles.enemySmallOne || enemy.numOfEnemy === Vehicles.enemySmallTwo) {
                 enemy.shiftY = 0;
             }
 
@@ -237,12 +239,14 @@ export class Game {
             }
 
             // collision with spaceship
-            if (typeof enemy.y === 'number' && typeof enemy.x === 'number' && typeof enemy.frameHeight === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof enemy.frameWidth === 'number') {
+            if (typeof enemy.y === 'number' && typeof enemy.x === 'number' && typeof enemy.frameHeight === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof this.spaceship.frameHeight === 'number' && typeof enemy.frameWidth === 'number') {
                 if (enemy.y + enemy.frameHeight - enemy.shiftY >= this.spaceship.y && enemy.x + enemy.frameWidth >= this.spaceship.x && enemy.x <= this.spaceship.x + this.spaceship.frameWidth) {
                     arr.splice(idx, 1);
                     this.spaceship.lives--;
                     this.hpIcons.pop();
                     this.backdrop.wink();
+                    this.initExplosion(this.spaceship.x - this.spaceship.frameWidth, this.spaceship.y - this.spaceship.frameHeight / 2, Vehicles.player);
+                    // this.spaceship.y += this.spaceship.frameHeight;
 
                     if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
                         this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
@@ -322,17 +326,18 @@ export class Game {
     }
 
     pickRandomEnemy(): number {
-        const randomNum: number = Math.floor((Math.random() * Object.keys(Enemies).length) / 2 + 1);
+        const numOfEnemies: number = Object.keys(Vehicles).length / 2 - 1;
+        const randomNum: number = Math.floor(Math.random() * numOfEnemies + 1);
 
-        if (randomNum === Enemies.enemyBigOne) {
+        if (randomNum === Vehicles.enemyBigOne) {
             this.bigEnemyRespawnCounter++;
 
             if (this.bigEnemyRespawnCounter === this.bigEnemyRespawnConstraint) {
                 this.bigEnemyRespawnCounter = 0;
 
-                return Enemies.enemyBigOne;
+                return Vehicles.enemyBigOne;
             } else {
-                return Enemies.enemySmallOne;
+                return Vehicles.enemySmallOne;
             }
         } else {
             return randomNum;

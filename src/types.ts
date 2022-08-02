@@ -1,7 +1,8 @@
-export enum Enemies {
+export enum Vehicles {
     enemySmallOne = 1,
     enemySmallTwo = 2,
     enemyBigOne = 3,
+    player = 4,
 }
 
 export enum EnemiesSpeeds {
