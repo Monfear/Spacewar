@@ -53,8 +53,8 @@ export class Game {
 
         this.spaceship.init();
 
-        // this.createEnemies();
-        this.initEnemy();
+        this.createEnemies();
+        // this.initEnemy();
 
         this.setTimer();
 
@@ -74,9 +74,11 @@ export class Game {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         // spaceship
-        this.spaceship.draw();
-        this.spaceship.setMovement();
-        this.spaceship.drawBullets();
+        if (this.spaceship.lives > 0) {
+            this.spaceship.draw();
+            this.spaceship.setMovement();
+            this.spaceship.drawBullets();
+        }
 
         // enemies
         this.drawEnemies();
@@ -158,8 +160,6 @@ export class Game {
 
     private initEnemy(): void {
         const enemy: Enemy = new Enemy(this.canvas, this.pickRandomEnemy());
-
-        console.log(enemy);
 
         enemy.img.addEventListener('load', () => {
             enemy.specifyDimensions();
@@ -245,8 +245,12 @@ export class Game {
                     this.spaceship.lives--;
                     this.hpIcons.pop();
                     this.backdrop.wink();
-                    this.initExplosion(this.spaceship.x - this.spaceship.frameWidth, this.spaceship.y - this.spaceship.frameHeight / 2, Vehicles.player);
-                    // this.spaceship.y += this.spaceship.frameHeight;
+
+                    if (this.spaceship.lives <= 0) {
+                        this.initExplosion(this.spaceship.x - this.spaceship.frameWidth, this.spaceship.y - this.spaceship.frameHeight / 2, Vehicles.player);
+
+                        this.endGame();
+                    }
 
                     if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
                         this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
@@ -342,5 +346,27 @@ export class Game {
         } else {
             return randomNum;
         }
+    }
+
+    endGame(): void {
+        console.log('koniec');
+
+        if (this.respawnEnemyIntervalId) {
+            clearInterval(this.respawnEnemyIntervalId);
+        }
+
+        if (this.timerIntervalId) {
+            clearInterval(this.timerIntervalId);
+        }
+
+        this.enemies.forEach((enemy: Enemy, idx, arr) => {
+            if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
+                this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
+
+                while (arr.length !== 0) {
+                    arr.pop();
+                }
+            }
+        });
     }
 }
