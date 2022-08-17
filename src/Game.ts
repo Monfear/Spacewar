@@ -2,7 +2,7 @@
 
 import { loadFont } from './utils';
 
-import { Vehicles, EnemiesSpeeds, Icons } from './types';
+import { Vehicles, EnemiesSpeeds, Icons, Obstacles } from './types';
 
 import { Spaceship } from './Spaceship';
 import { Enemy } from './Enemy';
@@ -10,6 +10,7 @@ import { Explosion } from './Explosion';
 import { Bullet } from './Bullet';
 import { Icon } from './Icon';
 import { Backdrop } from './Backdrop';
+import { Obstacle } from './Obstacle';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
@@ -21,6 +22,7 @@ export class Game {
 
     private enemies: Enemy[] = [];
     private explosions: Explosion[] = [];
+    private obstacles: Obstacle[] = [];
 
     private bigEnemyRespawnCounter: number = 0;
     private bigEnemyRespawnConstraint: number = 3;
@@ -43,6 +45,8 @@ export class Game {
     private hpIcons: Icon[] = [];
     private shieldIcons: Icon[] = [];
 
+    private isMovingTest: boolean = true;
+
     constructor() {
         this.setCanvasDimensions();
 
@@ -53,8 +57,10 @@ export class Game {
 
         this.spaceship.init();
 
-        this.createEnemies();
+        // this.createEnemies();
         // this.initEnemy();
+
+        this.initObstacle();
 
         this.setTimer();
 
@@ -88,6 +94,11 @@ export class Game {
 
         // shot collisions
         this.checkShotColisions();
+
+        // obstacles
+        if (this.obstacles.length > 0) {
+            this.drawObstacles();
+        }
 
         // points
         this.drawPoints();
@@ -346,6 +357,73 @@ export class Game {
         } else {
             return randomNum;
         }
+    }
+
+    initObstacle(): void {
+        const obstacle = new Obstacle(Obstacles.bomb, this.canvas);
+
+        obstacle.img.addEventListener('load', () => {
+            obstacle.specifyDimensions();
+
+            obstacle.x = obstacle._randomPositionX;
+
+            if (typeof obstacle.frameHeight === 'number') {
+                obstacle.y = -obstacle.frameHeight;
+            }
+
+            this.obstacles.push(obstacle);
+        });
+    }
+
+    drawObstacles(): void {
+        this.obstacles.forEach((obstacle, idx, arr) => {
+            // increase speed counter
+            obstacle.speedCounter++;
+
+            // increase current frame based on counter
+            if (obstacle.speedCounter > obstacle.speedConstraint) {
+                obstacle.speedCounter = 0;
+                obstacle.currentFrame++;
+            }
+
+            // reset current frame
+            if (typeof obstacle.totalFrames === 'number') {
+                if (obstacle.currentFrame >= obstacle.totalFrames) {
+                    obstacle.currentFrame = 0;
+                }
+            }
+
+            // starting cut point
+            if (typeof obstacle.frameWidth === 'number') {
+                obstacle.sx = obstacle.currentFrame * obstacle.frameWidth;
+            }
+
+            // increase y
+            if (this.isMovingTest) {
+                // <<<<<<<<<<<<<<
+                if (typeof obstacle.y === 'number' && typeof obstacle.velY === 'number') {
+                    obstacle.y += obstacle.velY;
+                }
+            }
+
+            // delete off the screen
+            if (typeof obstacle.y === 'number') {
+                if (obstacle.y > this.canvas.height) {
+                    arr.splice(idx, 1);
+                }
+            }
+
+            if (typeof obstacle.x === 'number' && typeof obstacle.y === 'number' && typeof obstacle.frameWidth === 'number' && typeof obstacle.frameHeight === 'number' && typeof obstacle.sx === 'number') {
+                this.ctx.drawImage(obstacle.img, obstacle.sx, obstacle.sy, obstacle.frameWidth, obstacle.frameHeight, obstacle.x, obstacle.y, obstacle.frameWidth, obstacle.frameHeight);
+            }
+
+            // collision with spaceship
+            if (typeof obstacle.y === 'number' && typeof obstacle.frameHeight === 'number' && typeof this.spaceship.y === 'number' && typeof obstacle.x === 'number' && typeof obstacle.frameWidth === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof obstacle.shiftY === 'number' && typeof obstacle.shiftX === 'number') {
+                if (obstacle.y + obstacle.frameHeight - obstacle.shiftY >= this.spaceship.y && obstacle.x + obstacle.frameWidth - obstacle.shiftX >= this.spaceship.x && obstacle.x + obstacle.shiftX <= this.spaceship.x + this.spaceship.frameWidth) {
+                    this.isMovingTest = false;
+                }
+            }
+        });
     }
 
     endGame(): void {

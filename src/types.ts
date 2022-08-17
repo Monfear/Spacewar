@@ -32,3 +32,8 @@ export enum Icons {
     live = 'live',
     barrier = 'barrier',
 }
+
+export enum Obstacles {
+    asteroid = 'asteroid',
+    bomb = 'bomb',
+}
