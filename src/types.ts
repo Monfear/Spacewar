@@ -34,6 +34,7 @@ export enum Icons {
 }
 
 export enum Obstacles {
-    asteroid = 'asteroid',
-    bomb = 'bomb',
+    asteroid = 1,
+    bomb = 2,
+    health = 3,
 }

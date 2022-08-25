@@ -5,7 +5,6 @@ export class Spaceship {
 
     public width: number | undefined = undefined;
     public height: number | undefined = undefined;
-
     public frameWidth: number | undefined = undefined;
     public frameHeight: number | undefined = undefined;
 
@@ -35,7 +34,8 @@ export class Spaceship {
     public shields: number = 1;
 
     constructor(private canvas: HTMLCanvasElement, private ctx: CanvasRenderingContext2D) {
-        this.img.src = require('./../img/spaceship_sprites.png');
+        // this.img.src = require('./../img/spaceship_sprites.png');
+        this.setImgSrc();
 
         this.setMovementListeners();
         this.setShotListener();
@@ -51,6 +51,10 @@ export class Spaceship {
                 this.y = this.canvas.height - this.height + this.shiftY;
             }
         });
+    }
+
+    private setImgSrc(): void {
+        this.img.src = require('./../img/spaceship_sprites.png');
     }
 
     public specifyDimensions(): void {

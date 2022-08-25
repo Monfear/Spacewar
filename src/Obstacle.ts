@@ -24,7 +24,7 @@ export class Obstacle {
     public shiftY: number | undefined = undefined;
     public shiftX: number | undefined = undefined;
 
-    constructor(private kind: string, private canvas: HTMLCanvasElement) {
+    constructor(public kind: number, private canvas: HTMLCanvasElement) {
         this.setImgSrc();
         this.setVelocity();
         this.setShifts();
@@ -35,8 +35,10 @@ export class Obstacle {
             this.img.src = require('./../img/asteroids_sprites.png');
         } else if (this.kind === Obstacles.bomb) {
             this.img.src = require('./../img/bombs_sprites.png');
+        } else if (this.kind === Obstacles.health) {
+            this.img.src = require('./../img/health.png');
         } else {
-            console.warn('wrong enum');
+            console.warn('no img set');
         }
     }
 
@@ -48,8 +50,10 @@ export class Obstacle {
             this.totalFrames = 5;
         } else if (this.kind === Obstacles.bomb) {
             this.totalFrames = 2;
+        } else if (this.kind === Obstacles.health) {
+            this.totalFrames = 1;
         } else {
-            console.warn('wrong enum');
+            console.warn('no dimensions set');
         }
 
         if (typeof this.totalFrames === 'number') {
@@ -63,6 +67,10 @@ export class Obstacle {
             this.velY = 2;
         } else if (this.kind === Obstacles.bomb) {
             this.velY = 1;
+        } else if (this.kind === Obstacles.health) {
+            this.velY = 2;
+        } else {
+            console.warn('no velocity set');
         }
     }
 
@@ -72,7 +80,12 @@ export class Obstacle {
             this.shiftX = 30;
         } else if (this.kind === Obstacles.bomb) {
             this.shiftY = 25;
-            this.shiftX = 25;
+            this.shiftX = 30;
+        } else if (this.kind === Obstacles.health) {
+            this.shiftY = 25;
+            this.shiftX = 30;
+        } else {
+            console.warn('no shifts set');
         }
     }
 

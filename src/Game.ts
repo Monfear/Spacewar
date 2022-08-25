@@ -11,6 +11,7 @@ import { Bullet } from './Bullet';
 import { Icon } from './Icon';
 import { Backdrop } from './Backdrop';
 import { Obstacle } from './Obstacle';
+import { Barrier } from './Barrier';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
@@ -30,6 +31,9 @@ export class Game {
     private respawnEnemyIntervalId: NodeJS.Timer | null = null;
     private respawnEnemyTime: number = 3000;
 
+    private respawnObstacleIntervalId: NodeJS.Timer | null = null;
+    private respawnObstacleTime: number = (Math.floor(Math.random() * 8) + 6) * 1000;
+
     private timerIntervalId: NodeJS.Timer | null = null;
     private timerValue: number = 1;
     private timerTime: number = 1000;
@@ -45,7 +49,7 @@ export class Game {
     private hpIcons: Icon[] = [];
     private shieldIcons: Icon[] = [];
 
-    private isMovingTest: boolean = true;
+    // private isMovingTest: boolean = true;
 
     constructor() {
         this.setCanvasDimensions();
@@ -61,10 +65,24 @@ export class Game {
         // this.initEnemy();
 
         this.initObstacle();
+        // this.createObstacles();
 
         this.setTimer();
 
         this.createIcons();
+
+        // >>>>>>>>>>>
+        this.test();
+    }
+
+    test(): void {
+        const barrier: Barrier = new Barrier();
+
+        barrier.img.addEventListener('load', () => {
+            barrier.specifyDimensions();
+
+            console.log(barrier);
+        });
     }
 
     private setCanvasDimensions(): void {
@@ -161,12 +179,6 @@ export class Game {
 
             this.shieldIcons.push(shieldIcon);
         }
-    }
-
-    private createEnemies(): void {
-        this.respawnEnemyIntervalId = setInterval(() => {
-            this.initEnemy();
-        }, this.respawnEnemyTime);
     }
 
     private initEnemy(): void {
@@ -271,6 +283,12 @@ export class Game {
         });
     }
 
+    private createEnemies(): void {
+        this.respawnEnemyIntervalId = setInterval(() => {
+            this.initEnemy();
+        }, this.respawnEnemyTime);
+    }
+
     initExplosion(x: number, y: number, numOfEnemy: number): void {
         const explosion: Explosion = new Explosion(numOfEnemy);
 
@@ -360,9 +378,23 @@ export class Game {
     }
 
     initObstacle(): void {
-        const obstacle = new Obstacle(Obstacles.bomb, this.canvas);
+        const numOfObstacles: number = Object.keys(Obstacles).length / 2;
+        const randomNum: number = Math.floor(Math.random() * numOfObstacles) + 1;
+        let chosenObstacle: number;
 
-        obstacle.img.addEventListener('load', () => {
+        if (randomNum === 1) {
+            chosenObstacle = Obstacles.asteroid;
+        } else if (randomNum === 2) {
+            chosenObstacle = Obstacles.bomb;
+        } else if (randomNum === 3) {
+            chosenObstacle = Obstacles.health;
+        } else {
+            chosenObstacle = 0;
+        }
+
+        const obstacle: Obstacle = new Obstacle(chosenObstacle, this.canvas);
+
+        obstacle.img.addEventListener('load', (): void => {
             obstacle.specifyDimensions();
 
             obstacle.x = obstacle._randomPositionX;
@@ -376,7 +408,7 @@ export class Game {
     }
 
     drawObstacles(): void {
-        this.obstacles.forEach((obstacle, idx, arr) => {
+        this.obstacles.forEach((obstacle: Obstacle, idx: number, arr: Obstacle[]): void => {
             // increase speed counter
             obstacle.speedCounter++;
 
@@ -399,11 +431,11 @@ export class Game {
             }
 
             // increase y
-            if (this.isMovingTest) {
-                // <<<<<<<<<<<<<<
-                if (typeof obstacle.y === 'number' && typeof obstacle.velY === 'number') {
-                    obstacle.y += obstacle.velY;
-                }
+            // if (this.isMovingTest) {
+            // <<<<<<<<<<<<<<
+            if (typeof obstacle.y === 'number' && typeof obstacle.velY === 'number') {
+                obstacle.y += obstacle.velY;
+                // }
             }
 
             // delete off the screen
@@ -419,11 +451,30 @@ export class Game {
 
             // collision with spaceship
             if (typeof obstacle.y === 'number' && typeof obstacle.frameHeight === 'number' && typeof this.spaceship.y === 'number' && typeof obstacle.x === 'number' && typeof obstacle.frameWidth === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof obstacle.shiftY === 'number' && typeof obstacle.shiftX === 'number') {
-                if (obstacle.y + obstacle.frameHeight - obstacle.shiftY >= this.spaceship.y && obstacle.x + obstacle.frameWidth - obstacle.shiftX >= this.spaceship.x && obstacle.x + obstacle.shiftX <= this.spaceship.x + this.spaceship.frameWidth) {
-                    this.isMovingTest = false;
+                if (obstacle.y + obstacle.frameHeight - obstacle.shiftY >= this.spaceship.y && obstacle.x + obstacle.shiftX <= this.spaceship.x + this.spaceship.frameWidth && obstacle.x + obstacle.frameWidth - obstacle.shiftX >= this.spaceship.x) {
+                    // this.isMovingTest = false;
+
+                    arr.splice(idx, 1);
+
+                    if (obstacle.kind === Obstacles.health) {
+                        this.spaceship.lives++;
+                        this.createIcons();
+                    } else if (obstacle.kind === Obstacles.asteroid || obstacle.kind === Obstacles.bomb) {
+                        for (let i = 0; i < 2; i++) {
+                            this.spaceship.lives--;
+                            this.hpIcons.pop();
+                            this.backdrop.wink();
+                        }
+                    }
                 }
             }
         });
+    }
+
+    private createObstacles(): void {
+        this.respawnObstacleIntervalId = setInterval(() => {
+            this.initObstacle();
+        }, this.respawnObstacleTime);
     }
 
     endGame(): void {
