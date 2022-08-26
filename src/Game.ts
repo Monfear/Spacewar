@@ -11,7 +11,7 @@ import { Bullet } from './Bullet';
 import { Icon } from './Icon';
 import { Backdrop } from './Backdrop';
 import { Obstacle } from './Obstacle';
-import { Barrier } from './Barrier';
+import { Shield } from './Shield';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
@@ -49,6 +49,8 @@ export class Game {
     private hpIcons: Icon[] = [];
     private shieldIcons: Icon[] = [];
 
+    // private shield: Shield = new Shield();
+
     // private isMovingTest: boolean = true;
 
     constructor() {
@@ -64,26 +66,20 @@ export class Game {
         // this.createEnemies();
         // this.initEnemy();
 
-        this.initObstacle();
+        // this.initObstacle();
         // this.createObstacles();
 
         this.setTimer();
 
         this.createIcons();
 
+        // this.createShield();
+
         // >>>>>>>>>>>
         this.test();
     }
 
-    test(): void {
-        const barrier: Barrier = new Barrier();
-
-        barrier.img.addEventListener('load', () => {
-            barrier.specifyDimensions();
-
-            console.log(barrier);
-        });
-    }
+    test(): void {}
 
     private setCanvasDimensions(): void {
         this.canvas.width = window.innerWidth;
@@ -132,6 +128,12 @@ export class Game {
         this.shieldIcons.forEach((icon) => {
             icon.draw();
         });
+
+        // shield
+        // this.drawShield();
+        if (typeof this.spaceship.x === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.frameWidth === 'number') {
+            this.spaceship.shield.draw(this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth);
+        }
     };
 
     private setAudiowideFont(): void {

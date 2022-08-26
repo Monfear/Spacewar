@@ -1,4 +1,5 @@
 import { Bullet } from './Bullet';
+import { Shield } from './Shield';
 
 export class Spaceship {
     public img: HTMLImageElement = new Image();
@@ -33,12 +34,20 @@ export class Spaceship {
     public lives: number = 3;
     public shields: number = 1;
 
+    public shield: Shield;
+
     constructor(private canvas: HTMLCanvasElement, private ctx: CanvasRenderingContext2D) {
         // this.img.src = require('./../img/spaceship_sprites.png');
         this.setImgSrc();
 
         this.setMovementListeners();
         this.setShotListener();
+
+        // test
+        this.shield = new Shield(this.ctx);
+        // this.shield.init();
+
+        console.log(this.shield);
     }
 
     public init(): void {
@@ -84,10 +93,10 @@ export class Spaceship {
     }
 
     public draw(): void {
-        // increase constraint counter
+        // increase counter
         this.speedCounter++;
 
-        // regulate speed frames
+        // increase current frame
         if (this.speedCounter > this.speedConstraint) {
             this.speedCounter = 0;
             this.currentFrame++;
