@@ -11,7 +11,6 @@ import { Bullet } from './Bullet';
 import { Icon } from './Icon';
 import { Backdrop } from './Backdrop';
 import { Obstacle } from './Obstacle';
-import { Shield } from './Shield';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
@@ -49,10 +48,6 @@ export class Game {
     private hpIcons: Icon[] = [];
     private shieldIcons: Icon[] = [];
 
-    // private shield: Shield = new Shield();
-
-    // private isMovingTest: boolean = true;
-
     constructor() {
         this.setCanvasDimensions();
 
@@ -61,10 +56,10 @@ export class Game {
 
         this.initGameLoop();
 
-        this.spaceship.init();
+        // this.spaceship.init();
 
         // this.createEnemies();
-        // this.initEnemy();
+        this.initEnemy();
 
         // this.initObstacle();
         // this.createObstacles();
@@ -130,9 +125,11 @@ export class Game {
         });
 
         // shield
-        // this.drawShield();
         if (typeof this.spaceship.x === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.frameWidth === 'number') {
-            this.spaceship.shield.draw(this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth);
+            if (this.spaceship.isShieldActive) {
+                this.shieldIcons.pop();
+                this.spaceship.shield.draw(this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth);
+            }
         }
     };
 
@@ -267,18 +264,21 @@ export class Game {
             if (typeof enemy.y === 'number' && typeof enemy.x === 'number' && typeof enemy.frameHeight === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof this.spaceship.frameHeight === 'number' && typeof enemy.frameWidth === 'number') {
                 if (enemy.y + enemy.frameHeight - enemy.shiftY >= this.spaceship.y && enemy.x + enemy.frameWidth >= this.spaceship.x && enemy.x <= this.spaceship.x + this.spaceship.frameWidth) {
                     arr.splice(idx, 1);
-                    this.spaceship.lives--;
-                    this.hpIcons.pop();
-                    this.backdrop.wink();
+
+                    if (!this.spaceship.isShieldActive) {
+                        this.spaceship.lives--;
+                        this.hpIcons.pop();
+                        this.backdrop.wink();
+                    }
+
+                    if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
+                        this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
+                    }
 
                     if (this.spaceship.lives <= 0) {
                         this.initExplosion(this.spaceship.x - this.spaceship.frameWidth, this.spaceship.y - this.spaceship.frameHeight / 2, Vehicles.player);
 
                         this.endGame();
-                    }
-
-                    if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
-                        this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
                     }
                 }
             }

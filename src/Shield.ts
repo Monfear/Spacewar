@@ -25,15 +25,6 @@ export class Shield {
         this.init();
     }
 
-    public init(): void {
-        this.img.addEventListener('load', () => {
-            this.specifyDimensions();
-
-            this.x = 100;
-            this.y = 100;
-        });
-    }
-
     private setImgSrc(): void {
         this.img.src = require('./../img/shield_sprites.png');
     }
@@ -44,6 +35,15 @@ export class Shield {
 
         this.frameWidth = this.width / this.totalFrames;
         this.frameHeight = this.height;
+    }
+
+    public init(): void {
+        this.img.addEventListener('load', () => {
+            this.specifyDimensions();
+
+            this.x = 0;
+            this.y = 0;
+        });
     }
 
     public draw(spaceshipX: number, spaceshipY: number, spaceshipFrameWidth: number): void {

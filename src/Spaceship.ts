@@ -35,31 +35,17 @@ export class Spaceship {
     public shields: number = 1;
 
     public shield: Shield;
+    public isShieldActive: boolean = false;
 
     constructor(private canvas: HTMLCanvasElement, private ctx: CanvasRenderingContext2D) {
-        // this.img.src = require('./../img/spaceship_sprites.png');
         this.setImgSrc();
+        this.init();
 
         this.setMovementListeners();
         this.setShotListener();
+        this.setShieldListener();
 
-        // test
         this.shield = new Shield(this.ctx);
-        // this.shield.init();
-
-        console.log(this.shield);
-    }
-
-    public init(): void {
-        this.img.addEventListener('load', () => {
-            this.specifyDimensions();
-
-            // starting position
-            if (typeof this.frameWidth === 'number' && typeof this.height === 'number') {
-                this.x = this.canvas.width / 2 - this.frameWidth / 2;
-                this.y = this.canvas.height - this.height + this.shiftY;
-            }
-        });
     }
 
     private setImgSrc(): void {
@@ -72,6 +58,18 @@ export class Spaceship {
 
         this.frameWidth = this.img.width / this.totalFrames;
         this.frameHeight = this.img.height;
+    }
+
+    public init(): void {
+        this.img.addEventListener('load', () => {
+            this.specifyDimensions();
+
+            // starting position
+            if (typeof this.frameWidth === 'number' && typeof this.height === 'number') {
+                this.x = this.canvas.width / 2 - this.frameWidth / 2;
+                this.y = this.canvas.height - this.height + this.shiftY;
+            }
+        });
     }
 
     private setMovementListeners(): void {
@@ -88,6 +86,21 @@ export class Spaceship {
         window.document.body.addEventListener('keyup', (e) => {
             if (e.key === ' ') {
                 this.initBullet();
+            }
+        });
+    }
+
+    private setShieldListener(): void {
+        window.document.body.addEventListener('keyup', (e) => {
+            if (e.key === 'Control') {
+                if (this.isShieldActive === false && this.shields > 0) {
+                    this.isShieldActive = true;
+                    this.shields--;
+
+                    setTimeout(() => {
+                        this.isShieldActive = false;
+                    }, 2000);
+                }
             }
         });
     }
