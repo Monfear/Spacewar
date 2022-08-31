@@ -1,5 +1,3 @@
-// drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
-
 import { Icons } from './types';
 
 export class Icon {
@@ -21,18 +19,18 @@ export class Icon {
         }
     }
 
-    setDimensions(): void {
+    private setDimensions(): void {
         this.width = this.img.width;
         this.height = this.img.height;
     }
 
-    init(): void {
+    public init(): void {
         this.img.addEventListener('load', () => {
             this.setDimensions();
         });
     }
 
-    draw(): void {
+    public draw(): void {
         if (typeof this.width === 'number' && typeof this.height === 'number') {
             this.ctx.drawImage(this.img, this.canvas.width - this.marginX - this.shiftX, this.marginY + this.shiftY, this.width, this.height);
         }

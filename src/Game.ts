@@ -1,8 +1,6 @@
-// drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
-
 import { loadFont } from './utils';
 
-import { Vehicles, EnemiesSpeeds, Icons, Obstacles } from './types';
+import { Vehicles, Icons, Obstacles } from './types';
 
 import { Spaceship } from './Spaceship';
 import { Enemy } from './Enemy';
@@ -50,28 +48,25 @@ export class Game {
 
     constructor() {
         this.setCanvasDimensions();
+        this.updateCanvasHandler();
 
         loadFont();
         this.setAudiowideFont();
 
         this.initGameLoop();
 
-        // this.spaceship.init();
-
-        // this.createEnemies();
-        this.initEnemy();
-
-        // this.initObstacle();
-        // this.createObstacles();
-
         this.setTimer();
-
         this.createIcons();
 
-        // this.createShield();
+        // this.initEnemy();
+        // this.createEnemies();
+
+        this.initObstacle();
+        // this.createObstacles();
 
         // >>>>>>>>>>>
         this.test();
+        // >>>>>>>>>>>
     }
 
     test(): void {}
@@ -79,6 +74,22 @@ export class Game {
     private setCanvasDimensions(): void {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+    }
+
+    private updateCanvasHandler(): void {
+        window.addEventListener('resize', () => {
+            this.setCanvasDimensions();
+
+            if (typeof this.spaceship.height === 'number') {
+                this.spaceship.y = this.canvas.height - this.spaceship.height + this.spaceship.shiftY;
+            }
+
+            this.setAudiowideFont();
+        });
+    }
+    private setAudiowideFont(): void {
+        this.ctx.font = '34px Audiowide';
+        this.ctx.fillStyle = 'white';
     }
 
     private initGameLoop = (): void => {
@@ -133,11 +144,6 @@ export class Game {
         }
     };
 
-    private setAudiowideFont(): void {
-        this.ctx.font = '34px Audiowide';
-        this.ctx.fillStyle = 'white';
-    }
-
     private drawPoints(): void {
         this.ctx.fillText('Score: ' + this.score, this.marginX, this.marginY);
     }
@@ -187,19 +193,10 @@ export class Game {
             enemy.specifyDimensions();
 
             // position
-            enemy.x = enemy._randomPositionX;
+            enemy.x = enemy.randomPositionX;
 
             if (typeof enemy.frameHeight === 'number') {
                 enemy.y = -enemy.frameHeight / 2;
-            }
-
-            // step
-            if (enemy.numOfEnemy === Vehicles.enemySmallOne) {
-                enemy.dy = EnemiesSpeeds.enemySmallOne;
-            } else if (enemy.numOfEnemy === Vehicles.enemySmallTwo) {
-                enemy.dy = EnemiesSpeeds.enemySmallTwo;
-            } else if (enemy.numOfEnemy === Vehicles.enemyBigOne) {
-                enemy.dy = EnemiesSpeeds.enemyBigOne;
             }
 
             // add to array
@@ -209,10 +206,10 @@ export class Game {
 
     private drawEnemies(): void {
         this.enemies.forEach((enemy, idx, arr) => {
-            // increase constraint counter
+            // increase counter
             enemy.speedCounter++;
 
-            // regulate speed frames
+            // // increase current frame
             if (enemy.speedCounter > enemy.speedConstraint) {
                 enemy.speedCounter = 0;
                 enemy.currentFrame++;
@@ -231,20 +228,13 @@ export class Game {
             }
 
             // increase y
-            if (typeof enemy.y === 'number' && typeof enemy.dy === 'number') {
-                enemy.y += enemy.dy;
+            if (typeof enemy.y === 'number' && typeof enemy.velY === 'number') {
+                enemy.y += enemy.velY;
             }
 
             // draw
             if (typeof enemy.x === 'number' && typeof enemy.y === 'number' && typeof enemy.frameWidth === 'number' && typeof enemy.frameHeight === 'number' && typeof enemy.sx === 'number') {
                 this.ctx.drawImage(enemy.img, enemy.sx, enemy.sy, enemy.frameWidth, enemy.frameHeight, enemy.x, enemy.y, enemy.frameWidth, enemy.frameHeight);
-            }
-
-            // adjust y position
-            if (enemy.numOfEnemy === Vehicles.enemyBigOne) {
-                enemy.shiftY = 25;
-            } else if (enemy.numOfEnemy === Vehicles.enemySmallOne || enemy.numOfEnemy === Vehicles.enemySmallTwo) {
-                enemy.shiftY = 0;
             }
 
             // delete off the screen
@@ -275,14 +265,20 @@ export class Game {
                         this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
                     }
 
-                    if (this.spaceship.lives <= 0) {
-                        this.initExplosion(this.spaceship.x - this.spaceship.frameWidth, this.spaceship.y - this.spaceship.frameHeight / 2, Vehicles.player);
-
-                        this.endGame();
-                    }
+                    this.checkSpaceshipLives();
                 }
             }
         });
+    }
+
+    private checkSpaceshipLives(): void {
+        if (this.spaceship.lives <= 0) {
+            if (typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.frameHeight === 'number') {
+                this.initExplosion(this.spaceship.x - this.spaceship.frameWidth, this.spaceship.y - this.spaceship.frameHeight / 2, Vehicles.player);
+
+                this.endGame();
+            }
+        }
     }
 
     private createEnemies(): void {
@@ -305,13 +301,11 @@ export class Game {
     }
 
     drawExplosions(): void {
-        // drawImage(image, sx?, sy?, sWidth?, sHeight?, dx, dy, dWidth, dHeight);
-
         this.explosions.forEach((explosion, idx, arr) => {
-            // increase constraint counter
+            // increase counter
             explosion.speedCounter++;
 
-            // regulate speed frames
+            // increase current frame
             if (explosion.speedCounter > explosion.speedConstraint) {
                 explosion.speedCounter = 0;
                 explosion.currentFrame++;
@@ -380,21 +374,7 @@ export class Game {
     }
 
     initObstacle(): void {
-        const numOfObstacles: number = Object.keys(Obstacles).length / 2;
-        const randomNum: number = Math.floor(Math.random() * numOfObstacles) + 1;
-        let chosenObstacle: number;
-
-        if (randomNum === 1) {
-            chosenObstacle = Obstacles.asteroid;
-        } else if (randomNum === 2) {
-            chosenObstacle = Obstacles.bomb;
-        } else if (randomNum === 3) {
-            chosenObstacle = Obstacles.health;
-        } else {
-            chosenObstacle = 0;
-        }
-
-        const obstacle: Obstacle = new Obstacle(chosenObstacle, this.canvas);
+        const obstacle: Obstacle = new Obstacle(this.canvas);
 
         obstacle.img.addEventListener('load', (): void => {
             obstacle.specifyDimensions();
@@ -411,10 +391,10 @@ export class Game {
 
     drawObstacles(): void {
         this.obstacles.forEach((obstacle: Obstacle, idx: number, arr: Obstacle[]): void => {
-            // increase speed counter
+            // increase counter
             obstacle.speedCounter++;
 
-            // increase current frame based on counter
+            // increase current frame
             if (obstacle.speedCounter > obstacle.speedConstraint) {
                 obstacle.speedCounter = 0;
                 obstacle.currentFrame++;
@@ -433,11 +413,8 @@ export class Game {
             }
 
             // increase y
-            // if (this.isMovingTest) {
-            // <<<<<<<<<<<<<<
             if (typeof obstacle.y === 'number' && typeof obstacle.velY === 'number') {
                 obstacle.y += obstacle.velY;
-                // }
             }
 
             // delete off the screen
@@ -454,8 +431,6 @@ export class Game {
             // collision with spaceship
             if (typeof obstacle.y === 'number' && typeof obstacle.frameHeight === 'number' && typeof this.spaceship.y === 'number' && typeof obstacle.x === 'number' && typeof obstacle.frameWidth === 'number' && typeof this.spaceship.x === 'number' && typeof this.spaceship.frameWidth === 'number' && typeof obstacle.shiftY === 'number' && typeof obstacle.shiftX === 'number') {
                 if (obstacle.y + obstacle.frameHeight - obstacle.shiftY >= this.spaceship.y && obstacle.x + obstacle.shiftX <= this.spaceship.x + this.spaceship.frameWidth && obstacle.x + obstacle.frameWidth - obstacle.shiftX >= this.spaceship.x) {
-                    // this.isMovingTest = false;
-
                     arr.splice(idx, 1);
 
                     if (obstacle.kind === Obstacles.health) {
@@ -480,8 +455,6 @@ export class Game {
     }
 
     endGame(): void {
-        console.log('koniec');
-
         if (this.respawnEnemyIntervalId) {
             clearInterval(this.respawnEnemyIntervalId);
         }

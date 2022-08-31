@@ -1,4 +1,4 @@
-import { Vehicles, EnemiesFrames, EnemiesLifes } from './types';
+import { Vehicles, EnemiesFrames, EnemiesLifes, EnemiesSpeeds } from './types';
 
 export class Enemy {
     public img: HTMLImageElement = new Image();
@@ -18,7 +18,7 @@ export class Enemy {
     public x: number | undefined = undefined;
     public y: number | undefined = undefined;
 
-    public dy: number | undefined = undefined;
+    public velY: number | undefined = undefined;
 
     public sx: number | undefined = undefined;
     public sy: number = 0;
@@ -33,9 +33,11 @@ export class Enemy {
         this.setImgSrc();
         this.setLifes();
         this.setPoints();
+        this.setVelocity();
+        this.setShift();
     }
 
-    setImgSrc(): void {
+    private setImgSrc(): void {
         if (this.numOfEnemy === Vehicles.enemySmallOne) {
             this.img.src = require('./../img/enemy_1_sprites.png');
         } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
@@ -65,7 +67,7 @@ export class Enemy {
         }
     }
 
-    setLifes(): void {
+    private setLifes(): void {
         if (this.numOfEnemy === Vehicles.enemySmallOne) {
             this.lifes = EnemiesLifes.enemySmallOne;
         } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
@@ -75,7 +77,7 @@ export class Enemy {
         }
     }
 
-    setPoints(): void {
+    private setPoints(): void {
         if (this.numOfEnemy === Vehicles.enemySmallOne) {
             this.points = 10;
         } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
@@ -87,7 +89,25 @@ export class Enemy {
         }
     }
 
-    get _randomPositionX() {
+    private setVelocity(): void {
+        if (this.numOfEnemy === Vehicles.enemySmallOne) {
+            this.velY = EnemiesSpeeds.enemySmallOne;
+        } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
+            this.velY = EnemiesSpeeds.enemySmallTwo;
+        } else if (this.numOfEnemy === Vehicles.enemyBigOne) {
+            this.velY = EnemiesSpeeds.enemyBigOne;
+        }
+    }
+
+    private setShift(): void {
+        if (this.numOfEnemy === Vehicles.enemyBigOne) {
+            this.shiftY = 25;
+        } else if (this.numOfEnemy === Vehicles.enemySmallOne || this.numOfEnemy === Vehicles.enemySmallTwo) {
+            this.shiftY = 0;
+        }
+    }
+
+    get randomPositionX() {
         if (typeof this.frameWidth === 'number') {
             return Math.floor(Math.random() * (this.canvas.width - this.frameWidth));
         }

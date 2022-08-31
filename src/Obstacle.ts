@@ -24,13 +24,34 @@ export class Obstacle {
     public shiftY: number | undefined = undefined;
     public shiftX: number | undefined = undefined;
 
-    constructor(public kind: number, private canvas: HTMLCanvasElement) {
+    public kind: number = 0;
+
+    constructor(private canvas: HTMLCanvasElement) {
+        this.setKind();
         this.setImgSrc();
         this.setVelocity();
         this.setShifts();
     }
 
-    setImgSrc(): void {
+    private setKind(): void {
+        const numOfObstacles: number = Object.keys(Obstacles).length / 2;
+        const randomNum: number = Math.floor(Math.random() * numOfObstacles) + 1;
+        let chosenObstacle: number;
+
+        if (randomNum === 1) {
+            chosenObstacle = Obstacles.asteroid;
+        } else if (randomNum === 2) {
+            chosenObstacle = Obstacles.bomb;
+        } else if (randomNum === 3) {
+            chosenObstacle = Obstacles.health;
+        } else {
+            chosenObstacle = 0;
+        }
+
+        this.kind = chosenObstacle;
+    }
+
+    private setImgSrc(): void {
         if (this.kind === Obstacles.asteroid) {
             this.img.src = require('./../img/asteroids_sprites.png');
         } else if (this.kind === Obstacles.bomb) {

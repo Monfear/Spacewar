@@ -16,8 +16,7 @@ export class Bullet {
     public x: number | undefined = undefined;
     public y: number | undefined = undefined;
 
-    private dx: null = null;
-    public dy: number = -5;
+    public velY: number = -5;
 
     public sx: number | undefined = undefined;
     public sy: number = 0;
@@ -26,13 +25,9 @@ export class Bullet {
 
     constructor() {
         this.img.src = require('./../img/bullet_sprites.png');
-
-        this.img.addEventListener('load', () => {
-            this.specifyDimensions();
-        });
     }
 
-    specifyDimensions() {
+    public specifyDimensions() {
         this.width = this.img.width;
         this.height = this.img.height;
 

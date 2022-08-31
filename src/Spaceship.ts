@@ -31,7 +31,7 @@ export class Spaceship {
 
     public bullets: Bullet[] = [];
 
-    public lives: number = 3;
+    public lives: number = 1;
     public shields: number = 1;
 
     public shield: Shield;
@@ -60,7 +60,7 @@ export class Spaceship {
         this.frameHeight = this.img.height;
     }
 
-    public init(): void {
+    private init(): void {
         this.img.addEventListener('load', () => {
             this.specifyDimensions();
 
@@ -149,7 +149,7 @@ export class Spaceship {
         }
     }
 
-    initBullet(): void {
+    private initBullet(): void {
         const bullet = new Bullet();
 
         bullet.img.addEventListener('load', () => {
@@ -169,7 +169,7 @@ export class Spaceship {
         });
     }
 
-    drawBullets(): void {
+    public drawBullets(): void {
         this.bullets.forEach((bullet, idx, arr) => {
             // increase constraint counter
             bullet.speedCounter++;
@@ -192,7 +192,7 @@ export class Spaceship {
 
             // increase y
             if (typeof bullet.y === 'number') {
-                bullet.y += bullet.dy;
+                bullet.y += bullet.velY;
             }
 
             // draw

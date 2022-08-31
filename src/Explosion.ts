@@ -18,15 +18,12 @@ export class Explosion {
     public x: number | undefined = undefined;
     public y: number | undefined = undefined;
 
-    public dx: null = null;
-    public dy: null = null;
-
     public sx: number | undefined = undefined;
     public sy: number = 0;
 
     constructor(public numOfVehicle: number) {
         this.setImgSrc();
-        this.adjustToAlly();
+        this.adjustValues();
     }
 
     setImgSrc() {
@@ -41,7 +38,7 @@ export class Explosion {
         }
     }
 
-    adjustToAlly(): void {
+    adjustValues(): void {
         if (this.numOfVehicle === Vehicles.player) {
             this.totalFrames = 9;
             this.speedConstraint = 10;

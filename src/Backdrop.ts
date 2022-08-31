@@ -10,7 +10,7 @@ export class Backdrop {
         this.hide();
     }
 
-    setStyles(): void {
+    private setStyles(): void {
         this.backdropElement.style.width = '100vw';
         this.backdropElement.style.height = '100vh';
         this.backdropElement.style.backgroundColor = this.color;
@@ -18,15 +18,15 @@ export class Backdrop {
         this.backdropElement.style.top = '0';
     }
 
-    show(): void {
+    private show(): void {
         this.backdropElement.style.display = 'block';
     }
 
-    hide(): void {
+    private hide(): void {
         this.backdropElement.style.display = 'none';
     }
 
-    wink(): void {
+    public wink(): void {
         this.show();
 
         setTimeout(() => {
