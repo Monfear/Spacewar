@@ -22,11 +22,16 @@ export class Game {
     private explosions: Explosion[] = [];
     private obstacles: Obstacle[] = [];
 
-    private bigEnemyRespawnCounter: number = 0;
-    private bigEnemyRespawnConstraint: number = 3;
+    private playNextLevelIntervalId: NodeJS.Timer | null = null;
+    private playNextLevelTime: number = 20000;
 
     private respawnEnemyIntervalId: NodeJS.Timer | null = null;
     private respawnEnemyTime: number = 3000;
+    private respawnEnemyTimeReducer: number = 200;
+    private respawnEnemyMaxTimeConstraint: number = 1000;
+
+    private bigEnemyRespawnCounter: number = 0;
+    private bigEnemyRespawnConstraint: number = 3;
 
     private respawnObstacleIntervalId: NodeJS.Timer | null = null;
     private respawnObstacleTime: number = (Math.floor(Math.random() * 8) + 6) * 1000;
@@ -58,15 +63,17 @@ export class Game {
         this.setTimer();
         this.createIcons();
 
-        // this.initEnemy();
         // this.createEnemies();
 
-        this.initObstacle();
-        // this.createObstacles();
+        this.createObstacles();
 
         // >>>>>>>>>>>
         this.test();
         // >>>>>>>>>>>
+
+        this.playNextLevelIntervalId = setInterval(() => {
+            this.playNextLevel();
+        }, this.playNextLevelTime);
     }
 
     test(): void {}
@@ -87,6 +94,7 @@ export class Game {
             this.setAudiowideFont();
         });
     }
+
     private setAudiowideFont(): void {
         this.ctx.font = '34px Audiowide';
         this.ctx.fillStyle = 'white';
@@ -168,6 +176,9 @@ export class Game {
     }
 
     private createIcons(): void {
+        this.hpIcons = [];
+        this.shieldIcons = [];
+
         const shiftX: number = 50;
         const shiftY: number = 50;
 
@@ -188,6 +199,7 @@ export class Game {
 
     private initEnemy(): void {
         const enemy: Enemy = new Enemy(this.canvas, this.pickRandomEnemy());
+        // const enemy: Enemy = new Enemy(this.canvas, 3);
 
         enemy.img.addEventListener('load', () => {
             enemy.specifyDimensions();
@@ -202,6 +214,12 @@ export class Game {
             // add to array
             this.enemies.push(enemy);
         });
+    }
+
+    private createEnemies(): void {
+        this.respawnEnemyIntervalId = setInterval(() => {
+            this.initEnemy();
+        }, this.respawnEnemyTime);
     }
 
     private drawEnemies(): void {
@@ -277,14 +295,10 @@ export class Game {
                 this.initExplosion(this.spaceship.x - this.spaceship.frameWidth, this.spaceship.y - this.spaceship.frameHeight / 2, Vehicles.player);
 
                 this.endGame();
+
+                console.log('end');
             }
         }
-    }
-
-    private createEnemies(): void {
-        this.respawnEnemyIntervalId = setInterval(() => {
-            this.initEnemy();
-        }, this.respawnEnemyTime);
     }
 
     initExplosion(x: number, y: number, numOfEnemy: number): void {
@@ -389,6 +403,12 @@ export class Game {
         });
     }
 
+    private createObstacles(): void {
+        this.respawnObstacleIntervalId = setInterval(() => {
+            this.initObstacle();
+        }, this.respawnObstacleTime);
+    }
+
     drawObstacles(): void {
         this.obstacles.forEach((obstacle: Obstacle, idx: number, arr: Obstacle[]): void => {
             // increase counter
@@ -435,23 +455,60 @@ export class Game {
 
                     if (obstacle.kind === Obstacles.health) {
                         this.spaceship.lives++;
-                        this.createIcons();
                     } else if (obstacle.kind === Obstacles.asteroid || obstacle.kind === Obstacles.bomb) {
-                        for (let i = 0; i < 2; i++) {
-                            this.spaceship.lives--;
-                            this.hpIcons.pop();
-                            this.backdrop.wink();
+                        let x: number;
+
+                        if (obstacle.kind === Obstacles.asteroid) {
+                            x = obstacle.x - obstacle.frameWidth / 2;
+                        } else if (obstacle.kind === Obstacles.bomb) {
+                            x = obstacle.x - obstacle.frameWidth * 1.3;
+                        } else {
+                            x = 0;
+                        }
+
+                        this.initExplosion(x, obstacle.y - obstacle.frameHeight, Vehicles.enemyBigOne);
+
+                        if (!this.spaceship.isShieldActive) {
+                            for (let i = 0; i < 2; i++) {
+                                this.spaceship.lives--;
+                                this.hpIcons.pop();
+                                this.backdrop.wink();
+                            }
                         }
                     }
+
+                    this.createIcons();
+                    console.log(this.spaceship.lives);
+
+                    this.checkSpaceshipLives();
                 }
             }
         });
     }
 
-    private createObstacles(): void {
-        this.respawnObstacleIntervalId = setInterval(() => {
-            this.initObstacle();
-        }, this.respawnObstacleTime);
+    playNextLevel(): void {
+        // if (this.respawnEnemyTime >= this.respawnEnemyMaxTimeConstraint) {
+        //     if (this.respawnEnemyIntervalId) {
+        //         clearInterval(this.respawnEnemyIntervalId);
+        //     }
+
+        //     this.respawnEnemyTime -= this.respawnEnemyTimeReducer;
+
+        //     this.createEnemies();
+        // }
+
+        if (this.respawnObstacleIntervalId) {
+            clearInterval(this.respawnObstacleIntervalId);
+        }
+
+        this.respawnObstacleTime = (Math.floor(Math.random() * 8) + 6) * 1000;
+
+        this.createObstacles();
+
+        // >>>>
+        // console.log(this.respawnEnemyTime);
+        console.log(this.respawnObstacleTime);
+        console.log('next level');
     }
 
     endGame(): void {
@@ -459,8 +516,16 @@ export class Game {
             clearInterval(this.respawnEnemyIntervalId);
         }
 
+        if (this.respawnObstacleIntervalId) {
+            clearInterval(this.respawnObstacleIntervalId);
+        }
+
         if (this.timerIntervalId) {
             clearInterval(this.timerIntervalId);
+        }
+
+        if (this.playNextLevelIntervalId) {
+            clearInterval(this.playNextLevelIntervalId);
         }
 
         this.enemies.forEach((enemy: Enemy, idx, arr) => {
@@ -472,5 +537,9 @@ export class Game {
                 }
             }
         });
+
+        while (this.obstacles.length !== 0) {
+            this.obstacles.pop();
+        }
     }
 }

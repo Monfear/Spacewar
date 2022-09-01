@@ -31,7 +31,7 @@ export class Spaceship {
 
     public bullets: Bullet[] = [];
 
-    public lives: number = 1;
+    public lives: number = 3;
     public shields: number = 1;
 
     public shield: Shield;

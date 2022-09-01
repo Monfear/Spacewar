@@ -72,7 +72,7 @@ export class Enemy {
             this.lifes = EnemiesLifes.enemySmallOne;
         } else if (this.numOfEnemy === Vehicles.enemySmallTwo) {
             this.lifes = EnemiesLifes.enemySmallTwo;
-        } else if (this.numOfEnemy === EnemiesLifes.enemyBigOne) {
+        } else if (this.numOfEnemy === Vehicles.enemyBigOne) {
             this.lifes = EnemiesLifes.enemyBigOne;
         }
     }
