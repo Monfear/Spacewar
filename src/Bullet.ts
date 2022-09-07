@@ -23,8 +23,14 @@ export class Bullet {
 
     public shiftY: number = 7;
 
+    private audio: HTMLAudioElement = new Audio(require('url:./../audio/LaserShot.wav'));
+
     constructor() {
         this.img.src = require('./../img/bullet_sprites.png');
+
+        this.audio.addEventListener('canplaythrough', () => {
+            this.audio.play();
+        });
     }
 
     public specifyDimensions() {

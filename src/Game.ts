@@ -51,6 +51,8 @@ export class Game {
     private hpIcons: Icon[] = [];
     private shieldIcons: Icon[] = [];
 
+    // private audios: Audios = new Audios();
+
     constructor() {
         this.setCanvasDimensions();
         this.updateCanvasHandler();
@@ -65,18 +67,21 @@ export class Game {
 
         // this.createEnemies();
 
-        this.createObstacles();
+        // this.createObstacles();
+
+        // this.playNextLevelIntervalId = setInterval(() => {
+        //     this.playNextLevel();
+        // }, this.playNextLevelTime);
 
         // >>>>>>>>>>>
-        this.test();
+        // this.test();
         // >>>>>>>>>>>
-
-        this.playNextLevelIntervalId = setInterval(() => {
-            this.playNextLevel();
-        }, this.playNextLevelTime);
     }
 
-    test(): void {}
+    test(): void {
+        const audioUrl = require('url:./../audio/LaserShot.wav');
+        let audio = new Audio(audioUrl);
+    }
 
     private setCanvasDimensions(): void {
         this.canvas.width = window.innerWidth;
@@ -146,7 +151,7 @@ export class Game {
         // shield
         if (typeof this.spaceship.x === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.frameWidth === 'number') {
             if (this.spaceship.isShieldActive) {
-                this.shieldIcons.pop();
+                this.createIcons();
                 this.spaceship.shield.draw(this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth);
             }
         }
@@ -175,7 +180,7 @@ export class Game {
         this.ctx.fillText(scoreText, this.canvas.width / 2 - scoreTextWidth / 2, this.marginY);
     }
 
-    private createIcons(): void {
+    public createIcons(): void {
         this.hpIcons = [];
         this.shieldIcons = [];
 
@@ -195,11 +200,12 @@ export class Game {
 
             this.shieldIcons.push(shieldIcon);
         }
+
+        console.log(this.shieldIcons);
     }
 
     private initEnemy(): void {
         const enemy: Enemy = new Enemy(this.canvas, this.pickRandomEnemy());
-        // const enemy: Enemy = new Enemy(this.canvas, 3);
 
         enemy.img.addEventListener('load', () => {
             enemy.specifyDimensions();
@@ -275,7 +281,7 @@ export class Game {
 
                     if (!this.spaceship.isShieldActive) {
                         this.spaceship.lives--;
-                        this.hpIcons.pop();
+                        // this.hpIcons.pop();
                         this.backdrop.wink();
                     }
 
@@ -301,7 +307,7 @@ export class Game {
         }
     }
 
-    initExplosion(x: number, y: number, numOfEnemy: number): void {
+    private initExplosion(x: number, y: number, numOfEnemy: number): void {
         const explosion: Explosion = new Explosion(numOfEnemy);
 
         explosion.img.addEventListener('load', () => {
@@ -314,7 +320,7 @@ export class Game {
         });
     }
 
-    drawExplosions(): void {
+    private drawExplosions(): void {
         this.explosions.forEach((explosion, idx, arr) => {
             // increase counter
             explosion.speedCounter++;
@@ -342,7 +348,7 @@ export class Game {
         });
     }
 
-    checkShotColisions(): void {
+    private checkShotColisions(): void {
         // bullets
         this.spaceship.bullets.forEach((bullet: Bullet, bulletIdx: number, bulletsArr: Bullet[]): void => {
             // enemies
@@ -368,7 +374,7 @@ export class Game {
         });
     }
 
-    pickRandomEnemy(): number {
+    private pickRandomEnemy(): number {
         const numOfEnemies: number = Object.keys(Vehicles).length / 2 - 1;
         const randomNum: number = Math.floor(Math.random() * numOfEnemies + 1);
 
@@ -387,7 +393,7 @@ export class Game {
         }
     }
 
-    initObstacle(): void {
+    private initObstacle(): void {
         const obstacle: Obstacle = new Obstacle(this.canvas);
 
         obstacle.img.addEventListener('load', (): void => {
@@ -409,7 +415,7 @@ export class Game {
         }, this.respawnObstacleTime);
     }
 
-    drawObstacles(): void {
+    private drawObstacles(): void {
         this.obstacles.forEach((obstacle: Obstacle, idx: number, arr: Obstacle[]): void => {
             // increase counter
             obstacle.speedCounter++;
@@ -471,7 +477,7 @@ export class Game {
                         if (!this.spaceship.isShieldActive) {
                             for (let i = 0; i < 2; i++) {
                                 this.spaceship.lives--;
-                                this.hpIcons.pop();
+                                // this.hpIcons.pop();
                                 this.backdrop.wink();
                             }
                         }
@@ -531,12 +537,12 @@ export class Game {
         this.enemies.forEach((enemy: Enemy, idx, arr) => {
             if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
-
-                while (arr.length !== 0) {
-                    arr.pop();
-                }
             }
         });
+
+        while (this.enemies.length !== 0) {
+            this.enemies.pop();
+        }
 
         while (this.obstacles.length !== 0) {
             this.obstacles.pop();

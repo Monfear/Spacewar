@@ -1,8 +1,9 @@
 import { Bullet } from './Bullet';
 import { Shield } from './Shield';
+// import { Audios } from './utils';
 
 export class Spaceship {
-    public img: HTMLImageElement = new Image();
+    private img: HTMLImageElement = new Image();
 
     public width: number | undefined = undefined;
     public height: number | undefined = undefined;
@@ -32,7 +33,7 @@ export class Spaceship {
     public bullets: Bullet[] = [];
 
     public lives: number = 3;
-    public shields: number = 1;
+    public shields: number = 5;
 
     public shield: Shield;
     public isShieldActive: boolean = false;
@@ -94,8 +95,8 @@ export class Spaceship {
         window.document.body.addEventListener('keyup', (e) => {
             if (e.key === 'Control') {
                 if (this.isShieldActive === false && this.shields > 0) {
-                    this.isShieldActive = true;
                     this.shields--;
+                    this.isShieldActive = true;
 
                     setTimeout(() => {
                         this.isShieldActive = false;
@@ -151,6 +152,7 @@ export class Spaceship {
 
     private initBullet(): void {
         const bullet = new Bullet();
+        // Audios.playBulletSound();
 
         bullet.img.addEventListener('load', () => {
             bullet.specifyDimensions();

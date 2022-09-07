@@ -27,8 +27,7 @@ export class Obstacle {
     public kind: number = 0;
 
     constructor(private canvas: HTMLCanvasElement) {
-        // this.setKind();
-        this.kind = 2;
+        this.setKind();
         this.setImgSrc();
         this.setVelocity();
         this.setShifts();
