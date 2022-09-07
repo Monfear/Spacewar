@@ -50,8 +50,7 @@ export class Game {
 
     private hpIcons: Icon[] = [];
     private shieldIcons: Icon[] = [];
-
-    // private audios: Audios = new Audios();
+    private isCreateIconsTriggered: boolean = false;
 
     constructor() {
         this.setCanvasDimensions();
@@ -151,8 +150,16 @@ export class Game {
         // shield
         if (typeof this.spaceship.x === 'number' && typeof this.spaceship.y === 'number' && typeof this.spaceship.frameWidth === 'number') {
             if (this.spaceship.isShieldActive) {
-                this.createIcons();
                 this.spaceship.shield.draw(this.spaceship.x, this.spaceship.y, this.spaceship.frameWidth);
+
+                if (!this.isCreateIconsTriggered) {
+                    this.isCreateIconsTriggered = true;
+                    this.createIcons();
+
+                    setTimeout(() => {
+                        this.isCreateIconsTriggered = false;
+                    }, this.spaceship.shield.activationTime);
+                }
             }
         }
     };
@@ -200,8 +207,6 @@ export class Game {
 
             this.shieldIcons.push(shieldIcon);
         }
-
-        console.log(this.shieldIcons);
     }
 
     private initEnemy(): void {
@@ -359,6 +364,9 @@ export class Game {
                             enemy.lifes--;
                             bulletsArr.splice(bulletIdx, 1);
 
+                            // enemy.audio.play();
+                            bullet.audio2.play();
+
                             if (enemy.lifes <= 0) {
                                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
                                 enemiesArr.splice(enemyIdx, 1);
@@ -461,6 +469,7 @@ export class Game {
 
                     if (obstacle.kind === Obstacles.health) {
                         this.spaceship.lives++;
+                        obstacle.healthAudio.play();
                     } else if (obstacle.kind === Obstacles.asteroid || obstacle.kind === Obstacles.bomb) {
                         let x: number;
 

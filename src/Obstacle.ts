@@ -26,11 +26,14 @@ export class Obstacle {
 
     public kind: number = 0;
 
+    public healthAudio: HTMLAudioElement = new Audio();
+
     constructor(private canvas: HTMLCanvasElement) {
         this.setKind();
         this.setImgSrc();
         this.setVelocity();
         this.setShifts();
+        this.setAudio();
     }
 
     private setKind(): void {
@@ -63,7 +66,7 @@ export class Obstacle {
         }
     }
 
-    specifyDimensions(): void {
+    public specifyDimensions(): void {
         this.width = this.img.width;
         this.height = this.img.height;
 
@@ -83,7 +86,7 @@ export class Obstacle {
         }
     }
 
-    setVelocity(): void {
+    private setVelocity(): void {
         if (this.kind === Obstacles.asteroid) {
             this.velY = 2;
         } else if (this.kind === Obstacles.bomb) {
@@ -95,7 +98,7 @@ export class Obstacle {
         }
     }
 
-    setShifts(): void {
+    private setShifts(): void {
         if (this.kind === Obstacles.asteroid) {
             this.shiftY = 40;
             this.shiftX = 30;
@@ -107,6 +110,12 @@ export class Obstacle {
             this.shiftX = 30;
         } else {
             console.warn('no shifts set');
+        }
+    }
+
+    private setAudio(): void {
+        if (this.kind === Obstacles.health) {
+            this.healthAudio.src = require('url:./../audio/HPadded.wav');
         }
     }
 

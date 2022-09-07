@@ -21,9 +21,13 @@ export class Explosion {
     public sx: number | undefined = undefined;
     public sy: number = 0;
 
+    private audio: HTMLAudioElement = new Audio(require('url:./../audio/Explosion.wav'));
+
     constructor(public numOfVehicle: number) {
         this.setImgSrc();
         this.adjustValues();
+
+        this.audio.play();
     }
 
     setImgSrc() {

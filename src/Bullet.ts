@@ -23,7 +23,9 @@ export class Bullet {
 
     public shiftY: number = 7;
 
-    private audio: HTMLAudioElement = new Audio(require('url:./../audio/LaserShot.wav'));
+    // private audio: HTMLAudioElement = new Audio(require('url:./../audio/LaserShot.wav'));
+    private audio: HTMLAudioElement = new Audio(require('url:./../audio/DefiniteShot.wav'));
+    public audio2: HTMLAudioElement = new Audio(require('url:./../audio/LowBassHit.wav'));
 
     constructor() {
         this.img.src = require('./../img/bullet_sprites.png');

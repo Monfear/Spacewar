@@ -20,6 +20,10 @@ export class Shield {
     private speedCounter: number = 0;
     private speedConstraint: number = 4;
 
+    public activationTime: number = 2000;
+
+    public audio: HTMLAudioElement = new Audio(require('url:./../audio/EnergyShieldActivated.wav'));
+
     constructor(private ctx: CanvasRenderingContext2D) {
         this.setImgSrc();
         this.init();

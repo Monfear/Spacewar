@@ -1,6 +1,5 @@
 import { Bullet } from './Bullet';
 import { Shield } from './Shield';
-// import { Audios } from './utils';
 
 export class Spaceship {
     private img: HTMLImageElement = new Image();
@@ -33,7 +32,7 @@ export class Spaceship {
     public bullets: Bullet[] = [];
 
     public lives: number = 3;
-    public shields: number = 5;
+    public shields: number = 1;
 
     public shield: Shield;
     public isShieldActive: boolean = false;
@@ -98,9 +97,11 @@ export class Spaceship {
                     this.shields--;
                     this.isShieldActive = true;
 
+                    this.shield.audio.play();
+
                     setTimeout(() => {
                         this.isShieldActive = false;
-                    }, 2000);
+                    }, this.shield.activationTime);
                 }
             }
         });
