@@ -102,6 +102,8 @@ export class Game {
     private setAudiowideFont(): void {
         this.ctx.font = '34px Audiowide';
         this.ctx.fillStyle = 'white';
+
+        // #e4f5f4;
     }
 
     private initGameLoop = (): void => {

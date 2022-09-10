@@ -1,5 +1,5 @@
-import { Game } from './Game';
+import { StartScreen } from './StartScreen';
 
 window.onload = () => {
-    const game = new Game();
+    const menu = new StartScreen();
 };

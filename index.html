@@ -10,13 +10,23 @@
     <title>Spacewar</title>
 
     <link rel="stylesheet" href="./scss/styles.scss">
-    <script src="./src/script.ts" type="module"></script>
+    <script src="./src/script.ts" type="module" defer></script>
 </head>
 
 <body>
 
     <canvas class="canvas" data-canvas></canvas>
 
+    <div class="startScreen" data-startScreen>
+        <div class="startScreen__menu" data-menu>
+            <h1 class="startScreen__menu__title">spacewar</h1>
+            <button class="startScreen__menu__button startScreen__menu__button--start" data-startBtn></button>
+            <button class="startScreen__menu__button startScreen__menu__button--exit" data-exitBtn></button>
+            <button class="startScreen__menu__button startScreen__menu__button--sound" data-soundBtn></button>
+        </div>
+
+
+    </div>
 </body>
 
 </html>

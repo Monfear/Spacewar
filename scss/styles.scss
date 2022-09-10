@@ -13,8 +13,111 @@
 body {
     background-color: v.$color-black;
     overflow: hidden;
+    cursor: url('./../img/cursor.png'), auto;
 }
 
 .canvas {
     background-image: url('./../img/background.gif');
+}
+
+.startScreen {
+    width: 100vw;
+    height: 100vh;
+    background-image: url('./../img/background-start-screen.png');
+
+    font-family: Audiowide, sans-serif;
+    color: v.$color-white;
+    text-transform: uppercase;
+
+    &__menu {
+        width: 640px;
+        height: 480px;
+        background-image: url('./../img/Window.png');
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+
+        &__title {
+            margin-top: 0.8rem;
+        }
+
+        &__button {
+            border: none;
+
+            width: 300px;
+            height: 85px;
+            background-color: transparent;
+            background-size: cover;
+            cursor: inherit;
+            transition: all 0.2s;
+
+            &--start {
+                background-image: url('./../img/Start_BTN.png');
+                margin-top: 5.5rem;
+            }
+
+            &--exit {
+                background-image: url('./../img/Exit_BTN.png');
+                margin-top: 1rem;
+            }
+
+            &--start,
+            &--exit {
+                border-radius: 20px;
+
+                &:hover {
+                    box-shadow: 0 0 10px 3px v.$color-white, 0 0 5px 9px inset v.$color-white;
+                    transform: scale(1.02);
+                }
+
+                &:active {
+                    transform: scale(1);
+                }
+            }
+
+            &--sound {
+                width: 50px;
+                height: 50px;
+                background-image: url('./../img/Sound_BTN.png');
+                margin-top: 2rem;
+                border-radius: 10px;
+                position: relative;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                &.hideLine::after {
+                    display: none;
+                }
+
+                &:hover {
+                    box-shadow: 0 0 10px 2px white, 0 0 5px 3px inset white;
+                    transform: scale(1.05);
+                }
+
+                &:active {
+                    transform: scale(1);
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+
+                    width: 100%;
+                    height: 5px;
+                    background-color: red;
+
+                    transform: rotate(-45deg);
+                }
+            }
+        }
+    }
 }
