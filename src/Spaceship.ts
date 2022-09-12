@@ -1,5 +1,6 @@
 import { Bullet } from './Bullet';
 import { Shield } from './Shield';
+import { audios } from './utils';
 
 export class Spaceship {
     private img: HTMLImageElement = new Image();
@@ -18,8 +19,8 @@ export class Spaceship {
     public x: number | undefined = undefined;
     public y: number | undefined = undefined;
 
-    public dx: number = 10;
-    public dy: null = null;
+    public velX: number = 10;
+    public velY: null = null;
 
     public sx: number | undefined = undefined;
     public sy: number = 0;
@@ -97,7 +98,8 @@ export class Spaceship {
                     this.shields--;
                     this.isShieldActive = true;
 
-                    this.shield.audio.play();
+                    audios.shieldAudio.play();
+                    audios.shieldAudio.currentTime = 0;
 
                     setTimeout(() => {
                         this.isShieldActive = false;
@@ -144,16 +146,15 @@ export class Spaceship {
     public setMovement(): void {
         if (typeof this.frameWidth === 'number' && typeof this.x === 'number') {
             if (this.isArrowRight && this.x < this.canvas.width - this.frameWidth) {
-                this.x += this.dx;
+                this.x += this.velX;
             } else if (this.isArrowLeft && this.x > 0) {
-                this.x -= this.dx;
+                this.x -= this.velX;
             }
         }
     }
 
     private initBullet(): void {
         const bullet = new Bullet();
-        // Audios.playBulletSound();
 
         bullet.img.addEventListener('load', () => {
             bullet.specifyDimensions();

@@ -1,4 +1,5 @@
 import { Game } from './Game';
+import { audios } from './utils';
 
 export class StartScreen {
     private canvasElement: HTMLCanvasElement = document.querySelector('[data-canvas]')! as HTMLCanvasElement;
@@ -11,27 +12,24 @@ export class StartScreen {
 
     private counterElement: HTMLHeadingElement = document.querySelector('[data-counter]')! as HTMLHeadingElement;
 
-    private startingAudio: HTMLAudioElement = new Audio(require('url:./../audio/startingMusic.wav'));
-    private clickAudio: HTMLAudioElement = new Audio(require('url:./../audio/ClickButton.wav'));
-
     constructor() {
         this.hideCanvas();
         this.setupListeners();
 
-        this.startingAudio.loop = true;
+        audios.startingAudio.loop = true;
     }
 
     private setupListeners(): void {
         this.startBtn.addEventListener('click', (): void => {
-            this.clickAudio.play();
-            this.clickAudio.currentTime = 0;
+            audios.clickAudio.play();
+            audios.clickAudio.currentTime = 0;
 
             this.startGame();
         });
 
         this.exitBtn.addEventListener('click', (): void => {
-            this.clickAudio.play();
-            this.clickAudio.currentTime = 0;
+            audios.clickAudio.play();
+            audios.clickAudio.currentTime = 0;
 
             this.exitGame();
         });
@@ -54,10 +52,10 @@ export class StartScreen {
 
         if (!this.soundBtn.classList.contains(className)) {
             this.soundBtn.classList.add(className);
-            this.startingAudio.play();
+            audios.startingAudio.play();
         } else {
             this.soundBtn.classList.remove(className);
-            this.startingAudio.pause();
+            audios.startingAudio.pause();
         }
     }
 
@@ -94,6 +92,10 @@ export class StartScreen {
     }
 
     private countToStart(): void {
+        audios.counterAudio.playbackRate = 1.1;
+        audios.counterAudio.volume = 0.5;
+        audios.counterAudio.play();
+
         let counter: number = 5;
 
         this.counterElement.innerText = String(counter);
@@ -108,11 +110,34 @@ export class StartScreen {
                 const text: string = 'Start';
                 this.counterElement.innerText = text;
 
+                this.counterElement.animate(
+                    [
+                        {
+                            opacity: 1,
+                            transform: 'scale(1) translate(-50%, -50%)',
+                        },
+                        {
+                            opacity: 0,
+                            transform: 'scale(10) translate(-50%, -50%)',
+                        },
+                    ],
+                    {
+                        duration: 1000,
+                        iterations: 1,
+                        fill: 'forwards',
+                    }
+                );
+
                 setTimeout(() => {
+                    audios.counterAudio.pause();
                     this.counterElement.remove();
 
+                    audios.gameAudio.loop = true;
+                    audios.gameAudio.volume = 0.3;
+                    // audios.gameAudio.play();
+
                     new Game();
-                }, 2000);
+                }, 1000);
             }
         }, 1000);
     }

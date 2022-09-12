@@ -1,4 +1,5 @@
 import { Vehicles, Explosions } from './types';
+import { audios } from './utils';
 
 export class Explosion {
     public img: HTMLImageElement = new Image();
@@ -21,13 +22,12 @@ export class Explosion {
     public sx: number | undefined = undefined;
     public sy: number = 0;
 
-    private audio: HTMLAudioElement = new Audio(require('url:./../audio/Explosion.wav'));
-
     constructor(public numOfVehicle: number) {
         this.setImgSrc();
         this.adjustValues();
 
-        this.audio.play();
+        audios.explosionAudio.play();
+        audios.explosionAudio.currentTime = 0;
     }
 
     setImgSrc() {

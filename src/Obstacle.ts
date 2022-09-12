@@ -26,14 +26,11 @@ export class Obstacle {
 
     public kind: number = 0;
 
-    public healthAudio: HTMLAudioElement = new Audio();
-
     constructor(private canvas: HTMLCanvasElement) {
         this.setKind();
         this.setImgSrc();
         this.setVelocity();
         this.setShifts();
-        this.setAudio();
     }
 
     private setKind(): void {
@@ -110,12 +107,6 @@ export class Obstacle {
             this.shiftX = 30;
         } else {
             console.warn('no shifts set');
-        }
-    }
-
-    private setAudio(): void {
-        if (this.kind === Obstacles.health) {
-            this.healthAudio.src = require('url:./../audio/HPadded.wav');
         }
     }
 

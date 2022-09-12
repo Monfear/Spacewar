@@ -1,3 +1,5 @@
+import { audios } from './utils';
+
 export class Bullet {
     public img: HTMLImageElement = new Image();
 
@@ -23,19 +25,14 @@ export class Bullet {
 
     public shiftY: number = 7;
 
-    // private audio: HTMLAudioElement = new Audio(require('url:./../audio/LaserShot.wav'));
-    private audio: HTMLAudioElement = new Audio(require('url:./../audio/DefiniteShot.wav'));
-    public audio2: HTMLAudioElement = new Audio(require('url:./../audio/LowBassHit.wav'));
-
     constructor() {
         this.img.src = require('./../img/bullet_sprites.png');
 
-        this.audio.addEventListener('canplaythrough', () => {
-            this.audio.play();
-        });
+        audios.bulletShotAudio.play();
+        audios.bulletShotAudio.currentTime = 0;
     }
 
-    public specifyDimensions() {
+    public specifyDimensions(): void {
         this.width = this.img.width;
         this.height = this.img.height;
 

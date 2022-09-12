@@ -22,8 +22,6 @@ export class Shield {
 
     public activationTime: number = 2000;
 
-    public audio: HTMLAudioElement = new Audio(require('url:./../audio/EnergyShieldActivated.wav'));
-
     constructor(private ctx: CanvasRenderingContext2D) {
         this.setImgSrc();
         this.init();

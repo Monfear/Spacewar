@@ -1,4 +1,4 @@
-import { loadFont } from './utils';
+import { audios, loadFont } from './utils';
 
 import { Vehicles, Icons, Obstacles } from './types';
 
@@ -366,8 +366,8 @@ export class Game {
                             enemy.lifes--;
                             bulletsArr.splice(bulletIdx, 1);
 
-                            // enemy.audio.play();
-                            bullet.audio2.play();
+                            audios.bulletCollisionAudio.play();
+                            audios.bulletCollisionAudio.currentTime = 0;
 
                             if (enemy.lifes <= 0) {
                                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
@@ -471,7 +471,9 @@ export class Game {
 
                     if (obstacle.kind === Obstacles.health) {
                         this.spaceship.lives++;
-                        obstacle.healthAudio.play();
+
+                        audios.healthAudio.play();
+                        audios.healthAudio.currentTime = 0;
                     } else if (obstacle.kind === Obstacles.asteroid || obstacle.kind === Obstacles.bomb) {
                         let x: number;
 
