@@ -20,6 +20,17 @@ body {
     background-image: url('./../img/background.gif');
 }
 
+.counter {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    color: v.$color-white;
+    font-size: 6rem;
+    font-family: Audiowide;
+}
+
 .startScreen {
     width: 100vw;
     height: 100vh;

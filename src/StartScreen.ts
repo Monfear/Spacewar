@@ -9,6 +9,8 @@ export class StartScreen {
     private exitBtn: HTMLButtonElement = document.querySelector('[data-exitBtn]')! as HTMLButtonElement;
     private soundBtn: HTMLButtonElement = document.querySelector('[data-soundBtn]')! as HTMLButtonElement;
 
+    private counterElement: HTMLHeadingElement = document.querySelector('[data-counter]')! as HTMLHeadingElement;
+
     private startingAudio: HTMLAudioElement = new Audio(require('url:./../audio/startingMusic.wav'));
     private clickAudio: HTMLAudioElement = new Audio(require('url:./../audio/ClickButton.wav'));
 
@@ -73,10 +75,13 @@ export class StartScreen {
             if (opacity <= 0) {
                 clearInterval(intervalId);
 
-                this.mainScreenElement.style.display = 'none';
+                this.mainScreenElement.remove();
                 this.showCanvas();
 
-                new Game();
+                this.canvasElement.width = window.innerWidth;
+                this.canvasElement.height = window.innerHeight;
+
+                this.countToStart();
             }
         }, 500);
     }
@@ -86,5 +91,29 @@ export class StartScreen {
         const target: string = '_self';
 
         window.open(link, target);
+    }
+
+    private countToStart(): void {
+        let counter: number = 5;
+
+        this.counterElement.innerText = String(counter);
+
+        const intervalId = setInterval(() => {
+            counter--;
+            this.counterElement.innerText = String(counter);
+
+            if (counter < 0) {
+                clearInterval(intervalId);
+
+                const text: string = 'Start';
+                this.counterElement.innerText = text;
+
+                setTimeout(() => {
+                    this.counterElement.remove();
+
+                    new Game();
+                }, 2000);
+            }
+        }, 1000);
     }
 }
