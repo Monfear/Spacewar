@@ -20,7 +20,7 @@ export class Spaceship {
     public y: number | undefined = undefined;
 
     public velX: number = 10;
-    public velY: null = null;
+    public velY: number = 3;
 
     public sx: number | undefined = undefined;
     public sy: number = 0;
@@ -66,9 +66,14 @@ export class Spaceship {
             this.specifyDimensions();
 
             // starting position
-            if (typeof this.frameWidth === 'number' && typeof this.height === 'number') {
+            // if (typeof this.frameWidth === 'number' && typeof this.frameHeight === 'number') {
+            //     this.x = this.canvas.width / 2 - this.frameWidth / 2;
+            //     this.y = this.canvas.height - this.frameHeight + this.shiftY;
+            // }
+
+            if (typeof this.frameWidth === 'number' && typeof this.frameHeight === 'number') {
                 this.x = this.canvas.width / 2 - this.frameWidth / 2;
-                this.y = this.canvas.height - this.height + this.shiftY;
+                this.y = this.canvas.height - 10;
             }
         });
     }
@@ -109,7 +114,17 @@ export class Spaceship {
         });
     }
 
+    public moveToStartingPosition(): void {
+        if (typeof this.y === 'number' && typeof this.frameHeight === 'number') {
+            if (this.y > this.canvas.height - this.frameHeight + this.shiftY) {
+                this.y -= this.velY;
+            }
+        }
+    }
+
     public draw(): void {
+        this.moveToStartingPosition();
+
         // increase counter
         this.speedCounter++;
 

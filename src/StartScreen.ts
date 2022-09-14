@@ -24,6 +24,10 @@ export class StartScreen {
             audios.clickAudio.play();
             audios.clickAudio.currentTime = 0;
 
+            if (!audios.startingAudio.paused) {
+                audios.startingAudio.pause();
+            }
+
             this.startGame();
         });
 
