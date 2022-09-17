@@ -12,6 +12,7 @@
 
 body {
     background-color: v.$color-black;
+    background-image: url('./../img/background.gif');
     overflow: hidden;
     cursor: url('./../img/cursor.png'), auto;
 }
@@ -44,6 +45,7 @@ body {
         width: 640px;
         height: 480px;
         background-image: url('./../img/Window.png');
+        background-size: cover;
 
         position: absolute;
         top: 50%;
@@ -67,7 +69,7 @@ body {
             background-color: transparent;
             background-size: cover;
             cursor: inherit;
-            transition: all 0.2s;
+            transition: all 0.1s;
 
             &--start {
                 background-image: url('./../img/Start_BTN.png');
@@ -128,6 +130,86 @@ body {
 
                     transform: rotate(-45deg);
                 }
+            }
+        }
+    }
+}
+
+.leaderboard {
+    width: 640px;
+    height: 480px;
+    background-image: url('./../img/Window.png');
+    background-size: cover;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-family: Audiowide, sans-serif;
+    color: v.$color-white;
+    text-transform: uppercase;
+
+    &__title {
+        text-align: center;
+        margin-top: 0.8rem;
+    }
+
+    &__buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+
+        &__button {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            border: none;
+            background-color: transparent;
+            background-size: cover;
+            cursor: inherit;
+            transition: all 0.1s;
+
+            &:hover {
+                box-shadow: 0 0 10px 2px white, 0 0 5px 3px inset white;
+                transform: scale(1.05);
+            }
+
+            &--menu {
+                background-image: url('./../img/Menu_BTN.png');
+            }
+
+            &--exit {
+                background-image: url('./../img/Close_BTN.png');
+            }
+        }
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 1rem;
+
+        margin: 2rem 0 1.5rem;
+
+        &__result {
+            display: flex;
+            width: 80%;
+            background-color: hsla(210, 91%, 67%, 0.2);
+            padding: 0.5rem 1rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+
+            &__place {
+            }
+
+            &__name {
+            }
+
+            &__points {
+                margin-left: auto;
             }
         }
     }

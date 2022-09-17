@@ -38,3 +38,8 @@ export enum Obstacles {
     bomb = 2,
     health = 3,
 }
+
+export type Result = {
+    name: string;
+    score: number;
+};
