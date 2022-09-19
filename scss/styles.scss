@@ -1,4 +1,5 @@
 @use './variables' as v;
+@use './mixins' as *;
 
 @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 
@@ -15,6 +16,7 @@ body {
     background-image: url('./../img/background.gif');
     overflow: hidden;
     cursor: url('./../img/cursor.png'), auto;
+    font-family: Audiowide, sans-serif;
 }
 
 .canvas {
@@ -29,7 +31,6 @@ body {
 
     color: v.$color-white;
     font-size: 6rem;
-    font-family: Audiowide;
 }
 
 .startScreen {
@@ -37,15 +38,15 @@ body {
     height: 100vh;
     background-image: url('./../img/background-start-screen.png');
 
-    font-family: Audiowide, sans-serif;
     color: v.$color-white;
     text-transform: uppercase;
 
     &__menu {
-        width: 640px;
-        height: 480px;
-        background-image: url('./../img/Window.png');
-        background-size: cover;
+        // width: 640px;
+        // height: 480px;
+        // background-image: url('./../img/Window.png');
+        // background-size: cover;
+        @include window;
 
         position: absolute;
         top: 50%;
@@ -62,14 +63,7 @@ body {
         }
 
         &__button {
-            border: none;
-
-            width: 300px;
-            height: 85px;
-            background-color: transparent;
-            background-size: cover;
-            cursor: inherit;
-            transition: all 0.1s;
+            @include bigButton;
 
             &--start {
                 background-image: url('./../img/Start_BTN.png');
@@ -135,18 +129,82 @@ body {
     }
 }
 
-.leaderboard {
-    width: 640px;
-    height: 480px;
-    background-image: url('./../img/Window.png');
-    background-size: cover;
+.result {
+    @include window;
 
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 
-    font-family: Audiowide, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    color: v.$color-white;
+
+    &__trophyImg {
+        width: 160px;
+        margin: 1rem 0;
+    }
+
+    &__heading {
+        font-size: 1.6rem;
+    }
+
+    &__score {
+        font-size: 1.6rem;
+        margin: 0.6rem 0 1rem;
+    }
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+
+        &__message {
+            font-size: 1.4rem;
+        }
+
+        &__input {
+            color: hsl(229, 46%, 42%);
+            font-size: 1.6rem;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background-color: v.$color-white;
+            padding: 0.4rem 0;
+            width: 100%;
+
+            &:focus {
+                box-shadow: 0 0 3px 3px inset hsl(229, 46%, 42%);
+            }
+        }
+
+        &__error {
+            color: #ff6363;
+        }
+
+        &__button {
+            @include smallButton;
+
+            background-image: url('../img/Rating_BTN.png');
+        }
+    }
+}
+
+.leaderboard {
+    @include window;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
     color: v.$color-white;
     text-transform: uppercase;
 
@@ -161,14 +219,7 @@ body {
         gap: 1rem;
 
         &__button {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            border: none;
-            background-color: transparent;
-            background-size: cover;
-            cursor: inherit;
-            transition: all 0.1s;
+            @include smallButton;
 
             &:hover {
                 box-shadow: 0 0 10px 2px white, 0 0 5px 3px inset white;
@@ -213,4 +264,12 @@ body {
             }
         }
     }
+}
+
+.hide {
+    display: none;
+}
+
+.mask {
+    visibility: hidden;
 }

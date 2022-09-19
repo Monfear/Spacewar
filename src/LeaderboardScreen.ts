@@ -1,6 +1,7 @@
 import { Result } from './types';
 
-export class Leaderboard {
+export class LeaderboardScreen {
+    private mainLeaderboardElement: HTMLDivElement = document.querySelector('[data-leaderboard]')! as HTMLDivElement;
     private leaderboardContentElement: HTMLDivElement = document.querySelector('[data-leaderboardContent]')! as HTMLDivElement;
     private menuBtn: HTMLButtonElement = document.querySelector('[data-menuBtn]')! as HTMLButtonElement;
     private exit2Btn: HTMLButtonElement = document.querySelector('[data-exit2Btn]')! as HTMLButtonElement;
@@ -11,6 +12,8 @@ export class Leaderboard {
     constructor() {
         this.setupListeners();
         this.renderResults();
+
+        this.mainLeaderboardElement.classList.remove('hide');
     }
 
     private setupListeners(): void {
@@ -46,13 +49,7 @@ export class Leaderboard {
             }
 
             this.playersResults.sort((a: Result, b: Result): number => {
-                // return b.score - a.score;
-
-                if (a.score > b.score) {
-                    return -1;
-                } else {
-                    return 1;
-                }
+                return b.score - a.score;
             });
 
             this.playersResults.forEach((result, idx, arr): void => {

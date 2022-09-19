@@ -15,11 +15,11 @@
 
 <body>
 
-    <canvas class="canvas" data-canvas></canvas>
+    <canvas class="canvas hide" data-canvas></canvas>
 
-    <h1 class="counter" data-counter></h1>
+    <h1 class="counter hide" data-counter></h1>
 
-    <div class="startScreen" data-startScreen hidden>
+    <div class="startScreen hide" data-startScreen>
         <div class="startScreen__menu" data-menu>
             <h1 class="startScreen__menu__title">spacewar</h1>
             <button class="startScreen__menu__button startScreen__menu__button--start" data-startBtn></button>
@@ -28,16 +28,23 @@
         </div>
     </div>
 
-    <div class="leaderboard" data-leaderboard>
-        <h1 class="leaderboard__title">leaderboard</h1>
-        <div class="leaderboard__content" data-leaderboardContent>
-            <!-- <div class="leaderboard__content__result">
-                <p class="leaderboard__content__result__place">1.&nbsp;</p>
-                <p class="leaderboard__content__result__name">Patriko&nbsp;</p>
-                <p class="leaderboard__content__result__points">500</p>
+    <div class="result hide" data-result>
+        <img src="./img/trophy.png" alt="trophy" class="result__trophyImg">
+        <h2 class="result__heading">Congrats! Your score:</h2>
+        <span class="result__score" data-score></span>
 
-            </div> -->
-        </div>
+        <form class="result__form" data-form>
+            <label class="result__form__message">Enter your name on the leaderboard.</label>
+            <input type="text" class="result__form__input" maxlength="20">
+            <p class="result__form__error mask" data-error>Your name should be at least 3 characters long.</p>
+            <button class="result__form__button" type="submit"></button>
+        </form>
+
+    </div>
+
+    <div class="leaderboard hide" data-leaderboard>
+        <h1 class="leaderboard__title">leaderboard</h1>
+        <div class="leaderboard__content" data-leaderboardContent></div>
         <div class="leaderboard__buttons">
             <button class="leaderboard__buttons__button leaderboard__buttons__button--menu" data-menuBtn></button>
             <button class="leaderboard__buttons__button leaderboard__buttons__button--exit" data-exit2Btn></button>
