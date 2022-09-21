@@ -5,15 +5,13 @@ export class StartScreen {
     private canvasElement: HTMLCanvasElement = document.querySelector('[data-canvas]')! as HTMLCanvasElement;
     private mainScreenElement: HTMLDivElement = document.querySelector('[data-startScreen]')! as HTMLDivElement;
     private menuElement: HTMLDivElement = document.querySelector('[data-menu]')! as HTMLDivElement;
+    private counterElement: HTMLHeadingElement = document.querySelector('[data-counter]')! as HTMLHeadingElement;
 
     private startBtn: HTMLButtonElement = document.querySelector('[data-startBtn]')! as HTMLButtonElement;
     private exitBtn: HTMLButtonElement = document.querySelector('[data-exitBtn]')! as HTMLButtonElement;
     private soundBtn: HTMLButtonElement = document.querySelector('[data-soundBtn]')! as HTMLButtonElement;
 
-    private counterElement: HTMLHeadingElement = document.querySelector('[data-counter]')! as HTMLHeadingElement;
-
     constructor() {
-        this.hideCanvas();
         this.setupListeners();
 
         audios.startingAudio.loop = true;
@@ -43,14 +41,6 @@ export class StartScreen {
         });
     }
 
-    private hideCanvas(): void {
-        this.canvasElement.style.display = 'none';
-    }
-
-    private showCanvas(): void {
-        this.canvasElement.style.display = 'block';
-    }
-
     private toggleStartMusic(): void {
         const className = 'hideLine';
 
@@ -78,7 +68,8 @@ export class StartScreen {
                 clearInterval(intervalId);
 
                 this.mainScreenElement.remove();
-                this.showCanvas();
+                this.canvasElement.classList.remove('hide');
+                this.counterElement.classList.remove('hide');
 
                 this.canvasElement.width = window.innerWidth;
                 this.canvasElement.height = window.innerHeight;
