@@ -85,11 +85,11 @@ export class Obstacle {
 
     private setVelocity(): void {
         if (this.kind === Obstacles.asteroid) {
-            this.velY = 2;
+            this.velY = 3;
         } else if (this.kind === Obstacles.bomb) {
-            this.velY = 1;
-        } else if (this.kind === Obstacles.health) {
             this.velY = 2;
+        } else if (this.kind === Obstacles.health) {
+            this.velY = 3;
         } else {
             console.warn('no velocity set');
         }

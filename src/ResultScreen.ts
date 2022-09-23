@@ -12,6 +12,7 @@ export class ResultScreen {
     constructor(private score: number) {
         this.setupListeners();
 
+        this.mainResultElement.classList.remove('hide');
         this.scoreElement.innerText = `>> ${this.score} <<`;
     }
 
@@ -27,8 +28,8 @@ export class ResultScreen {
                         this.errorElement.classList.remove('mask');
                     } else {
                         this.errorElement.classList.add('mask');
-                        // this.addResult(userName, this.score);
-                        this.moveToLeaderboard();
+                        this.addResult(userName, this.score);
+                        // this.moveToLeaderboard();
                     }
                 }
             }
@@ -49,6 +50,8 @@ export class ResultScreen {
                 },
                 body: JSON.stringify(result),
             });
+
+            this.moveToLeaderboard();
 
             if (!response.ok) {
                 throw new Error('data has not been sent successfully');

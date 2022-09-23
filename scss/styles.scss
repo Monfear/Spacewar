@@ -50,8 +50,20 @@ body {
 
     font-size: 2.2rem;
 
-    // animation: name duration timing-function delay iteration-count direction fill-mode;
     animation: show 1s ease-in-out;
+}
+
+.gameOverInfo {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 3.5rem;
+    color: v.$color-loss;
+
+    position: absolute;
+    top: 5rem;
+    left: 50%;
+
+    transform: translateX(-50%);
 }
 
 .startScreen {

@@ -7,10 +7,9 @@ export function loadFont(): void {
 }
 
 export const audios = {
-    startingAudio: new Audio(require('url:./../audio/startingMusic.wav')),
+    startingAudio: new Audio(require('url:./../audio/space-heroes.mp3')),
     clickAudio: new Audio(require('url:./../audio/ClickButton.wav')),
     counterAudio: new Audio(require('url:./../audio/battle.wav')),
-    gameAudio: new Audio(require('url:./../audio/game.mp3')),
     bulletShotAudio: new Audio(require('url:./../audio/DefiniteShot.wav')),
     bulletCollisionAudio: new Audio(require('url:./../audio/LowBassHit.wav')),
     explosionAudio: new Audio(require('url:./../audio/Explosion.wav')),

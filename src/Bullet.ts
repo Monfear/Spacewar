@@ -28,6 +28,7 @@ export class Bullet {
     constructor() {
         this.img.src = require('./../img/bullet_sprites.png');
 
+        audios.bulletShotAudio.volume = 0.1;
         audios.bulletShotAudio.play();
         audios.bulletShotAudio.currentTime = 0;
     }

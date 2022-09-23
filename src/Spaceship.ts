@@ -33,7 +33,7 @@ export class Spaceship {
     public bullets: Bullet[] = [];
 
     public lives: number = 3;
-    public shields: number = 1;
+    public shields: number = 2;
 
     public shield: Shield;
     public isShieldActive: boolean = false;

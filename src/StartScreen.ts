@@ -127,10 +127,6 @@ export class StartScreen {
                     audios.counterAudio.pause();
                     this.counterElement.remove();
 
-                    audios.gameAudio.loop = true;
-                    audios.gameAudio.volume = 0.3;
-                    // audios.gameAudio.play();
-
                     new Game();
                 }, 1000);
             }

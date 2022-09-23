@@ -1,6 +1,6 @@
 import { audios, loadFont } from './utils';
 
-import { Vehicles, Icons, Obstacles } from './types';
+import { Vehicles, Icons, Obstacles, Result } from './types';
 
 import { Spaceship } from './Spaceship';
 import { Enemy } from './Enemy';
@@ -9,10 +9,15 @@ import { Bullet } from './Bullet';
 import { Icon } from './Icon';
 import { Backdrop } from './Backdrop';
 import { Obstacle } from './Obstacle';
+import { ResultScreen } from './ResultScreen';
+import { LeaderboardScreen } from './LeaderboardScreen';
 
 export class Game {
     private canvas: HTMLCanvasElement = document.querySelector('[data-canvas]') as HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+
+    private levelInfoElement: HTMLDivElement = document.querySelector('[data-levelInfo]')! as HTMLDivElement;
+    private gameOverElement: HTMLHeadingElement = document.querySelector('[data-gameOverInfo]')! as HTMLHeadingElement;
 
     private spaceship: Spaceship = new Spaceship(this.canvas, this.ctx);
 
@@ -22,13 +27,14 @@ export class Game {
     private explosions: Explosion[] = [];
     private obstacles: Obstacle[] = [];
 
-    private playNextLevelIntervalId: NodeJS.Timer | null = null;
-    private playNextLevelTime: number = 20000;
+    private level: number = 1;
+    private increaseLevelIntervalId: NodeJS.Timer | null = null;
+    private increaseLevelTime: number = 25000;
 
     private respawnEnemyIntervalId: NodeJS.Timer | null = null;
     private respawnEnemyTime: number = 3000;
     private respawnEnemyTimeReducer: number = 200;
-    private respawnEnemyMaxTimeConstraint: number = 1000;
+    private respawnEnemyMaxTimeConstraint: number = 600;
 
     private bigEnemyRespawnCounter: number = 0;
     private bigEnemyRespawnConstraint: number = 3;
@@ -59,27 +65,21 @@ export class Game {
         loadFont();
         this.setAudiowideFont();
 
-        this.initGameLoop();
-
         this.setTimer();
         this.createIcons();
 
-        // this.createEnemies();
+        this.initGameLoop();
 
-        // this.createObstacles();
+        this.createEnemies();
+        this.createObstacles();
 
-        // this.playNextLevelIntervalId = setInterval(() => {
-        //     this.playNextLevel();
-        // }, this.playNextLevelTime);
+        this.showLevel(this.level);
 
-        // >>>>>>>>>>>
-        // this.test();
-        // >>>>>>>>>>>
-    }
+        this.increaseLevelIntervalId = setInterval(() => {
+            this.increaseLevel();
 
-    test(): void {
-        const audioUrl = require('url:./../audio/LaserShot.wav');
-        let audio = new Audio(audioUrl);
+            this.showLevel(this.level);
+        }, this.increaseLevelTime);
     }
 
     private setCanvasDimensions(): void {
@@ -101,9 +101,43 @@ export class Game {
 
     private setAudiowideFont(): void {
         this.ctx.font = '34px Audiowide';
-        this.ctx.fillStyle = 'white';
+        this.ctx.fillStyle = 'rgb(228, 245, 244)';
+    }
 
-        // #e4f5f4;
+    private showLevel(level: number): void {
+        this.levelInfoElement.classList.remove('hide');
+        this.levelInfoElement.innerText = `Level ${String(level)}`;
+
+        setTimeout(() => {
+            this.levelInfoElement.classList.add('hide');
+        }, 1500);
+    }
+
+    private increaseLevel(): void {
+        this.level++;
+
+        if (this.level % 3 === 0 && this.spaceship.shields < 5) {
+            this.spaceship.shields++;
+            this.createIcons();
+        }
+
+        if (this.respawnEnemyIntervalId) {
+            clearInterval(this.respawnEnemyIntervalId);
+        }
+
+        if (this.respawnEnemyTime > this.respawnEnemyMaxTimeConstraint) {
+            this.respawnEnemyTime -= this.respawnEnemyTimeReducer;
+        }
+
+        this.createEnemies();
+
+        if (this.respawnObstacleIntervalId) {
+            clearInterval(this.respawnObstacleIntervalId);
+        }
+
+        this.respawnObstacleTime = (Math.floor(Math.random() * 8) + 6) * 1000;
+
+        this.createObstacles();
     }
 
     private initGameLoop = (): void => {
@@ -275,6 +309,13 @@ export class Game {
 
                     arr.splice(idx, 1);
 
+                    this.spaceship.lives--;
+                    this.hpIcons.pop();
+                    this.backdrop.wink();
+
+                    console.log(this.spaceship.lives);
+                    this.checkSpaceshipLives();
+
                     if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
                         this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
                     }
@@ -287,9 +328,11 @@ export class Game {
                     arr.splice(idx, 1);
 
                     if (!this.spaceship.isShieldActive) {
-                        this.spaceship.lives--;
-                        // this.hpIcons.pop();
-                        this.backdrop.wink();
+                        for (let i: number = 0; i < 2; i++) {
+                            this.spaceship.lives--;
+                            this.hpIcons.pop();
+                            this.backdrop.wink();
+                        }
                     }
 
                     if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
@@ -308,8 +351,6 @@ export class Game {
                 this.initExplosion(this.spaceship.x - this.spaceship.frameWidth, this.spaceship.y - this.spaceship.frameHeight / 2, Vehicles.player);
 
                 this.endGame();
-
-                console.log('end');
             }
         }
     }
@@ -469,7 +510,7 @@ export class Game {
                 if (obstacle.y + obstacle.frameHeight - obstacle.shiftY >= this.spaceship.y && obstacle.x + obstacle.shiftX <= this.spaceship.x + this.spaceship.frameWidth && obstacle.x + obstacle.frameWidth - obstacle.shiftX >= this.spaceship.x) {
                     arr.splice(idx, 1);
 
-                    if (obstacle.kind === Obstacles.health) {
+                    if (obstacle.kind === Obstacles.health && this.spaceship.lives < 5) {
                         this.spaceship.lives++;
 
                         audios.healthAudio.play();
@@ -488,16 +529,15 @@ export class Game {
                         this.initExplosion(x, obstacle.y - obstacle.frameHeight, Vehicles.enemyBigOne);
 
                         if (!this.spaceship.isShieldActive) {
-                            for (let i = 0; i < 2; i++) {
+                            for (let i: number = 0; i < 3; i++) {
                                 this.spaceship.lives--;
-                                // this.hpIcons.pop();
+                                this.hpIcons.pop();
                                 this.backdrop.wink();
                             }
                         }
                     }
 
                     this.createIcons();
-                    console.log(this.spaceship.lives);
 
                     this.checkSpaceshipLives();
                 }
@@ -505,32 +545,49 @@ export class Game {
         });
     }
 
-    playNextLevel(): void {
-        // if (this.respawnEnemyTime >= this.respawnEnemyMaxTimeConstraint) {
-        //     if (this.respawnEnemyIntervalId) {
-        //         clearInterval(this.respawnEnemyIntervalId);
-        //     }
+    private async checkResult(): Promise<void> {
+        const url: string = 'https://spacewar-ranking-default-rtdb.firebaseio.com/players.json';
+        const results: Result[] = [];
 
-        //     this.respawnEnemyTime -= this.respawnEnemyTimeReducer;
+        try {
+            const response: Response = await fetch(url);
 
-        //     this.createEnemies();
-        // }
+            if (!response.ok) {
+                throw new Error('data has not been fetched successfully');
+            }
 
-        if (this.respawnObstacleIntervalId) {
-            clearInterval(this.respawnObstacleIntervalId);
+            const data = await response.json();
+
+            for (const key in data) {
+                results.push({
+                    name: data[key].name,
+                    score: data[key].score,
+                });
+            }
+
+            results.sort((a: Result, b: Result): number => {
+                return b.score - a.score;
+            });
+
+            let lastClassifiedResult: number = results[4].score;
+
+            if (this.score > lastClassifiedResult) {
+                new ResultScreen(this.score);
+            } else {
+                new LeaderboardScreen();
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                console.warn(error.message);
+            }
         }
-
-        this.respawnObstacleTime = (Math.floor(Math.random() * 8) + 6) * 1000;
-
-        this.createObstacles();
-
-        // >>>>
-        // console.log(this.respawnEnemyTime);
-        console.log(this.respawnObstacleTime);
-        console.log('next level');
     }
 
-    endGame(): void {
+    private endGame(): void {
+        this.gameOverElement.classList.remove('hide');
+
+        this.checkResult();
+
         if (this.respawnEnemyIntervalId) {
             clearInterval(this.respawnEnemyIntervalId);
         }
@@ -543,11 +600,11 @@ export class Game {
             clearInterval(this.timerIntervalId);
         }
 
-        if (this.playNextLevelIntervalId) {
-            clearInterval(this.playNextLevelIntervalId);
+        if (this.increaseLevelIntervalId) {
+            clearInterval(this.increaseLevelIntervalId);
         }
 
-        this.enemies.forEach((enemy: Enemy, idx, arr) => {
+        this.enemies.forEach((enemy: Enemy, idx: number, arr: Enemy[]) => {
             if (typeof enemy.x === 'number' && typeof enemy.y === 'number') {
                 this.initExplosion(enemy.x, enemy.y, enemy.numOfEnemy);
             }
