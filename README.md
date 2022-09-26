@@ -26,4 +26,4 @@ or
 
 1.  download zip/clone repo
 2.  npm install
-3.  npm run
+3.  npm start
